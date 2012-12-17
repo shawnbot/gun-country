@@ -9,7 +9,9 @@
         return num.replace(/,/g, "");
       };
   d3.sheet.parse.number = function(str) {
-    return +str.replace(d3_sheet_numberPattern, d3_sheet_numberReplace);
+    return str
+      ? +str.replace(d3_sheet_numberPattern, d3_sheet_numberReplace)
+      : NaN;
   };
 
   var d3_sheet_moneyPattern = /^\s*\$([\d\.\,]+)\s*$/,
@@ -17,7 +19,9 @@
         return num.replace(/,/g, "");
       };
   d3.sheet.parse.money = function(str) {
-    return +str.replace(d3_sheet_moneyPattern, d3_sheet_moneyReplace);
+    return str
+      ? +str.replace(d3_sheet_moneyPattern, d3_sheet_moneyReplace)
+      : NaN;
   };
 
   d3.sheet.table = function() {
