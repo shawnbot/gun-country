@@ -64,11 +64,11 @@
         <thead>
           <tr>
             <th class="sortable" data-key="Calendar Year">Year</th>
-            <th class="colored sortable">Pistols</th>
-            <th class="colored sortable">Revolvers</th>
-            <th class="colored sortable">Rifles</th>
-            <th class="colored sortable">Shotguns</th>
-            <th class="colored sortable">Misc. Firearms</th>
+            <th class="colored sortable" data-group="type">Pistols</th>
+            <th class="colored sortable" data-group="type">Revolvers</th>
+            <th class="colored sortable" data-group="type">Rifles</th>
+            <th class="colored sortable" data-group="type">Shotguns</th>
+            <th class="colored sortable" data-group="type">Misc. Firearms</th>
             <th class="colored sortable">Total Firearms</th>
           </tr>
         </thead>
@@ -84,11 +84,11 @@
         <thead>
           <tr>
             <th class="sortable" data-key="Calendar Year">Year</th>
-            <th class="colored sortable">Pistols</th>
-            <th class="colored sortable">Revolvers</th>
-            <th class="colored sortable">Rifles</th>
-            <th class="colored sortable">Shotguns</th>
-            <th class="colored sortable">Misc. Firearms</th>
+            <th class="colored sortable" data-group="type">Pistols</th>
+            <th class="colored sortable" data-group="type">Revolvers</th>
+            <th class="colored sortable" data-group="type">Rifles</th>
+            <th class="colored sortable" data-group="type">Shotguns</th>
+            <th class="colored sortable" data-group="type">Misc. Firearms</th>
             <th class="colored sortable">Total Firearms</th>
           </tr>
         </thead>
@@ -104,9 +104,9 @@
         <thead>
           <tr>
             <th class="sortable">Year</th>
-            <th class="colored sortable">Shotguns</th>
-            <th class="colored sortable">Rifles</th>
-            <th class="colored sortable">Handguns</th>
+            <th class="colored sortable" data-group="type">Shotguns</th>
+            <th class="colored sortable" data-group="type">Rifles</th>
+            <th class="colored sortable" data-group="type">Handguns</th>
             <th class="colored sortable">Total</th>
           </tr>
         </thead>
@@ -122,9 +122,9 @@
         <thead>
           <tr>
             <th class="sortable">Year</th>
-            <th class="colored sortable">Licensed Importer</th>
-            <th class="colored sortable">Military</th>
-            <th class="colored sortable">Other</th>
+            <th class="colored sortable" data-group="type">Licensed Importer</th>
+            <th class="colored sortable" data-group="type">Military</th>
+            <th class="colored sortable" data-group="type">Other</th>
             <th class="colored sortable">Total</th>
           </tr>
         </thead>
@@ -140,9 +140,9 @@
         <thead>
           <tr>
             <th class="sortable">Country</th>
-            <th class="colored sortable">Handguns</th>
-            <th class="colored sortable">Rifles</th>
-            <th class="colored sortable">Shotguns</th>
+            <th class="colored sortable" data-group="type">Handguns</th>
+            <th class="colored sortable" data-group="type">Rifles</th>
+            <th class="colored sortable" data-group="type">Shotguns</th>
             <th class="colored sortable">Total Firearms</th>
           </tr>
         </thead>
@@ -182,9 +182,9 @@
             <th class="sortable" data-key="Calendar Year">Year</th>
             <th class="colored sortable">Application to Make NFA Firearms</th>
             <th class="colored sortable">Manufactured and Imported</th>
-            <th class="colored sortable">Application for Tax Exempt Transfer Between Licensees</th>
-            <th class="colored sortable">Application for Taxpaid Transfer</th>
-            <th class="colored sortable">Application for Tax-Exempt Transfer</th>
+            <th class="colored sortable" data-group="applications">Application for Tax Exempt Transfer Between Licensees</th>
+            <th class="colored sortable" data-group="applications">Application for Taxpaid Transfer</th>
+            <th class="colored sortable" data-group="applications">Application for Tax-Exempt Transfer</th>
             <th class="colored sortable">Exported</th>
             <th class="colored sortable">Total Firearms Processed</th>
           </tr>
@@ -203,10 +203,10 @@
             <th class="sortable">State</th>
             <th class="colored sortable">Any Other Weapon</th>
             <th class="colored sortable">Destructive Device</th>
-            <th class="colored sortable">Machinegun</th>
-            <th class="colored sortable">Silencer</th>
-            <th class="colored sortable">Short Barreled Rifle</th>
-            <th class="colored sortable">Short Barreled Shotgun</th>
+            <th class="colored sortable" data-group="type">Machinegun</th>
+            <th class="colored sortable" data-group="type">Silencer</th>
+            <th class="colored sortable" data-group="type">Short Barreled Rifle</th>
+            <th class="colored sortable" data-group="type">Short Barreled Shotgun</th>
             <th class="colored sortable">Total</th>
           </tr>
         </thead>
@@ -344,6 +344,7 @@
                   index: i,
                   key: this.dataset.key || this.textContent,
                   colored: this.classList.contains("colored"),
+                  group: this.dataset.group,
                   type: this.dataset.type || "number",
                   sortable: this.classList.contains("sortable")
                 };
@@ -358,7 +359,9 @@
             columns.push(col);
           });
 
-          var unpacked = rows.map(unpack);
+          var unpacked = rows.map(unpack),
+              colors = ["#fff", "#f00"],
+              groups = {};
           columns.forEach(function(col) {
 
             var values = unpacked.map(function(row) {
@@ -372,9 +375,35 @@
 
             col.scale = d3.scale.linear()
               .domain(extent)
-              .range(["#fff", "#f00"]);
+              .range(colors);
 
+              if (col.group) {
+                if (col.group in groups) {
+                  groups[col.group].push(col);
+                } else {
+                  groups[col.group] = [col];
+                }
+              }
           });
+
+          /*
+          for (var key in groups) {
+            var group = groups[key],
+                domain = group[0].scale.domain(),
+                len = group.length;
+            for (var i = 1; i < len; i++) {
+              var d = group[i].scale.domain();
+              if (d[0] < domain[0]) domain[0] = d[0];
+              if (d[1] > domain[1]) domain[1] = d[1];
+            }
+            var scale = d3.scale.linear()
+              .domain(domain)
+              .range(["#fff", "#f0f"]);
+            group.forEach(function(col) {
+              col.scale = scale;
+            });
+          }
+          */
 
           tbody = table.selectAll("tbody")
             .data([unpacked]);
