@@ -1,4 +1,4 @@
-Country,Handguns,Rifles,Shotguns,Total Firearms
+Country,Handguns,Rifles,Shotguns,Total Firearms
 Brazil,"359,846","381,097","105,676","846,619"
 Austria,"515,396","7,191",51,"522,638"
 Germany,"265,092","46,288","2,148","313,528"
@@ -27,4 +27,3 @@ Other,"1,348","2,246",16,"3,610"
 Portugal,0,0,"2,115","2,115"
 Switzerland,991,494,10,"1,495"
 Bulgaria,"1,450",0,0,"1,450"
-Totals,"1,725,276","998,072","529,056","3,252,404"
