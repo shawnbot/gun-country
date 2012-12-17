@@ -1,52 +1,51 @@
-,,,,,
-State,Importers,Manufacturers,Dealers,Total,
-Alabama,12,28,43,83,
-Alaska,0,10,25,35,
-Arizona,14,140,121,275,
-Arkansas,8,35,38,81,
-California,9,45,68,122,
-Colorado,1,33,52,86,
-Connecticut,7,43,33,83,
-Delaware,0,1,2,3,
-District of Columbia,0,0,1,1,
-Florida,28,136,215,379,
-Georgia,11,65,99,175,
-Hawaii,0,0,2,2,
-Idaho,0,57,30,87,
-Illinois,8,36,41,85,
-Indiana,2,37,69,108,
-Iowa,1,13,11,25,
-Kansas,3,16,47,66,
-Kentucky,8,30,54,92,
-Louisiana,2,22,65,89,
-Maine,1,17,18,36,
-Maryland,6,33,41,80,
-Massachusetts,3,44,23,70,
-Michigan,7,32,64,103,
-Minnesota,3,48,15,66,
-Mississippi,4,19,31,54,
-Missouri,4,58,67,129,
-Montana,1,16,28,45,
-Nebraska,0,9,14,23,
-Nevada,2,39,43,84,
-New Hampshire,6,29,31,66,
-New Jersey,1,4,17,22,
-New Mexico,4,17,30,51,
-New York,1,28,12,41,
-North Carolina,6,70,85,161,
-North Dakota,0,3,6,9,
-Ohio,2,80,104,186,
-Oklahoma,2,37,61,100,
-Oregon,2,71,65,138,
-Pennsylvania,7,79,112,198,
-Rhode Island,1,1,2,4,
-South Carolina,4,30,27,61,
-South Dakota,0,10,20,30,
-Tennessee,5,52,65,122,
-Texas,14,167,296,477,
-Utah,3,35,20,58,
-Vermont,4,13,7,24,
-Virginia,19,61,97,177,
-Washington,6,44,28,78,
-West Virginia,3,18,26,47,
-Wisconsin,2,45,40,87,
+State,Importers,Manufacturers,Dealers,Total
+Alabama,12,28,43,83
+Alaska,0,10,25,35
+Arizona,14,140,121,275
+Arkansas,8,35,38,81
+California,9,45,68,122
+Colorado,1,33,52,86
+Connecticut,7,43,33,83
+Delaware,0,1,2,3
+District of Columbia,0,0,1,1
+Florida,28,136,215,379
+Georgia,11,65,99,175
+Hawaii,0,0,2,2
+Idaho,0,57,30,87
+Illinois,8,36,41,85
+Indiana,2,37,69,108
+Iowa,1,13,11,25
+Kansas,3,16,47,66
+Kentucky,8,30,54,92
+Louisiana,2,22,65,89
+Maine,1,17,18,36
+Maryland,6,33,41,80
+Massachusetts,3,44,23,70
+Michigan,7,32,64,103
+Minnesota,3,48,15,66
+Mississippi,4,19,31,54
+Missouri,4,58,67,129
+Montana,1,16,28,45
+Nebraska,0,9,14,23
+Nevada,2,39,43,84
+New Hampshire,6,29,31,66
+New Jersey,1,4,17,22
+New Mexico,4,17,30,51
+New York,1,28,12,41
+North Carolina,6,70,85,161
+North Dakota,0,3,6,9
+Ohio,2,80,104,186
+Oklahoma,2,37,61,100
+Oregon,2,71,65,138
+Pennsylvania,7,79,112,198
+Rhode Island,1,1,2,4
+South Carolina,4,30,27,61
+South Dakota,0,10,20,30
+Tennessee,5,52,65,122
+Texas,14,167,296,477
+Utah,3,35,20,58
+Vermont,4,13,7,24
+Virginia,19,61,97,177
+Washington,6,44,28,78
+West Virginia,3,18,26,47
+Wisconsin,2,45,40,87
