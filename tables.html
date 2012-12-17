@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://d3js.org/d3.v2.min.js"></script>
+    <script src="d3.sheet.js"></script>
+    <style type="text/css">
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, sans-serif;
+        font-size: 14px;
+        line-height: 1.2em;
+        padding: 20px;
+      }
+
+      #container {
+        width: 40em;
+        margin: 0 auto;
+      }
+
+      table.data {
+        width: 100%;
+        border-spacing: 0;
+        margin: 0 0 1em 0;
+      }
+
+        table.data caption {
+          font-weight: bold;
+        }
+
+      table.data th,
+      table.data td {
+        text-align: right;
+        vertical-align: bottom;
+        padding: 4px;
+      }
+
+      table.data th {
+        width: 10%;
+      }
+
+      table.data tbody td {
+        font-family: "Monaco", "Courier New", monospace;
+        font-size: 12px;
+        vertical-align: top;
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <div id="container">
+
+      <table id="exhibit01" class="data"
+        data-url="data/2012/01-firearms-manufactured_1986-2012.csv">
+        <caption>
+          Exhibit 1. Firearms Manufactured (1986-2010)
+        </caption>
+        <thead>
+          <tr>
+            <th class="sortable" data-key="Calendar Year">Year</th>
+            <th class="colored sortable">Pistols</th>
+            <th class="colored sortable">Revolvers</th>
+            <th class="colored sortable">Rifles</th>
+            <th class="colored sortable">Shotguns</th>
+            <th class="colored sortable">Misc. Firearms</th>
+            <th class="colored sortable">Total Firearms</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+
+      <table id="exhibit02" class="data"
+        data-url="data/2012/02-firearms-maunfacturer-exports_1986-2010.csv">
+        <caption>
+          Exhibit 2. Firearms Manufacturers&rsquo; Exports (1986 - 2010)
+        </caption>
+        <thead>
+          <tr>
+            <th class="sortable" data-key="Calendar Year">Year</th>
+            <th class="colored sortable">Pistols</th>
+            <th class="colored sortable">Revolvers</th>
+            <th class="colored sortable">Rifles</th>
+            <th class="colored sortable">Shotguns</th>
+            <th class="colored sortable">Misc. Firearms</th>
+            <th class="colored sortable">Total Firearms</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+
+    </div>
+
+    <script>
+
+      d3.selectAll("table[data-url]")
+        .datum(function() {
+          return this.dataset;
+        })
+        .each(function(d, i) {
+          var load = d.url.substr(-3) === "tsv" ? d3.tsv : d3.csv,
+              table = this;
+          load(d.url, function(rows) {
+            populate(table, rows);
+          });
+        });
+
+      function populate(node, rows) {
+        var table = d3.select(node),
+            thead = table.select("thead"),
+            headers = thead.selectAll("tr:last-child > th")
+              .datum(function(d, i) {
+                return {
+                  index: i,
+                  key: this.dataset.key || this.textContent,
+                  colored: this.classList.contains("colored"),
+                  sortable: this.classList.contains("sortable")
+                };
+              }),
+              unpack = d3.sheet.unpack();
+
+          var columns = [];
+          headers.each(function(col) {
+            columns.push(col);
+          });
+
+          var unpacked = rows.map(unpack);
+          columns.forEach(function(col) {
+
+            var values = unpacked.map(function(row) {
+                  return row[col.key].value;
+                }).sort(),
+                extent = d3.extent(values);
+
+            col.scale = d3.scale.linear()
+              .domain(extent)
+              .range(["#fff", "#f00"]);
+
+          });
+
+          tbody = table.selectAll("tbody")
+            .data([unpacked]);
+          tbody.enter().append("tbody");
+
+          var rows = tbody.selectAll("tr")
+            .data(function(d) { return d; })
+            .enter()
+            .append("tr");
+
+          var cells = rows.selectAll("td")
+            .data(function(row) {
+              return row.cells = columns.map(function(col, i) {
+                var cell = row[col.key];
+                cell.column = columns[i];
+                return cell;
+              });
+            })
+            .enter()
+            .append("td")
+              .text(function(d) {
+                return d.string;
+              })
+              .attr("data-value", function(d) {
+                return d.value;
+              });
+
+          cells.filter(function(d) {
+            return d.column.colored;
+          })
+          .style("background-color", function(d) {
+            return d.column.scale(d.value);
+          });
+
+          var sortedCol = null,
+              sortLinks = headers.each(function(d) {
+                d.text = this.textContent;
+              })
+              .text("")
+              .append("a")
+                .text(function(d) {
+                  return d.text;
+                })
+                .attr("class", "unsorted")
+                .on("click", function(col) {
+                  var getter = function(row) {
+                        return row[col.key].value;
+                      },
+                      order = col.order === d3.descending
+                        ? d3.ascending
+                        : d3.descending;
+
+                  rows.sort(function(a, b) {
+                    return order(getter(a), getter(b));
+                  });
+
+                  col.order = order;
+
+                  sortLinks
+                    .attr("class", function(d) {
+                      return d === col
+                        ? ["sorted", "sorted-" + (col.order === d3.ascending ? "asc" : "desc")].join(" ")
+                        : "unsorted";
+                    });
+                });
+      }
+
+      function dataset() {
+        return this.dataset;
+      }
+
+    </script>
+  </body>
+</html>
