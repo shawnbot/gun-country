@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Firearm Cartograms</title>
+    <meta charset="utf-8">
+    <script src="http://d3js.org/d3.v2.min.js"></script>
+    <script src="js/colorbrewer.js"></script>
+    <script src="js/topojson.js"></script>
+    <script src="js/cartogram.js"></script>
+    <script src="js/d3.sheet.js"></script>
+    <style type="text/css">
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+        font-size: 14px;
+        line-height: 1.4em;
+        padding: 0;
+        margin: 0;
+      }
+
+      #container {
+        width: 800px;
+        margin: 20px auto;
+      }
+
+      h1 {
+        font-size: 200%;
+        margin: 0 0 15px 0;
+      }
+
+      h2 {
+        font-size: 160%;
+        margin: 0 0 10px 0;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      form, form > * {
+        margin: 0;
+      }
+
+      #status {
+        color: #999;
+        margin-left: 10px;
+      }
+
+      #map-container {
+        height: 500px;
+        text-align: center;
+        position: relative;
+        margin: 20px 0;
+      }
+
+      #map {
+        display: block;
+        position: absolute;
+        background: #fff;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      path.state {
+        stroke: #666;
+        stroke-width: .5;
+      }
+
+      path.state:hover {
+        stroke: #000;
+      }
+
+      form {
+        font-size: 120%;
+      }
+
+      select {
+        font-size: inherit;
+      }
+
+      #placeholder {
+        position: absolute;
+        z-index: -1;
+        display: block;
+        left: 0;
+        top: 0;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Firearm Cartograms</h1>
+      <form>
+        <p>
+          <label>Scale by <select id="field"></select></label>
+          <label><input id="percapita" type="checkbox"> per capita</label>
+          <span id="status"></span>
+        </p>
+      </form>
+      <div id="map-container">
+        <svg id="map"></svg>
+      </div>
+    </div>
+    <script>
+
+      // hide the form if the browser doesn't do SVG,
+      // (then just let everything else fail)
+      if (!document.createElementNS) {
+        document.getElementsByTagName("form")[0].style.display = "none";
+      }
+
+      // field definitions from:
+      // <http://www.census.gov/popest/data/national/totals/2011/files/NST-EST2011-alldata.pdf>
+      var percent = (function() {
+            var fmt = d3.format(".2f");
+            return function(n) { return fmt(n) + "%"; };
+          })(),
+          fields = [
+            {name: "(no scale)", id: "none"}
+          ],
+          fieldsById = d3.nest()
+            .key(function(d) { return d.id; })
+            .rollup(function(d) { return d[0]; })
+            .map(fields),
+          field = fields[0],
+          perCapita = false,
+          perCapitaKey = "POPESTIMATE2011",
+          colors = colorbrewer.RdYlBu[3]
+            .reverse()
+            .map(function(rgb) { return d3.hsl(rgb); });
+
+      var body = d3.select("body"),
+          stat = d3.select("#status");
+
+      var fieldSelect = d3.select("#field")
+        .on("change", function(e) {
+          field = fields[this.selectedIndex];
+          location.hash = "#" + [field.id, perCapita].join("/");
+        });
+
+      fieldSelect.selectAll("option")
+        .data(fields)
+        .enter()
+        .append("option")
+          .attr("value", function(d) { return d.id; })
+          .text(function(d) { return d.name; });
+
+      var perCapitaCheck = d3.select("#percapita")
+        .on("change", function(e) {
+          location.hash = "#" + [field.id, this.checked].join("/");
+        });
+
+      var map = d3.select("#map"),
+          zoom = d3.behavior.zoom()
+            .translate([-38, 32])
+            .scale(.94)
+            .scaleExtent([0.5, 10.0])
+            .on("zoom", updateZoom),
+          layer = map.append("g")
+            .attr("id", "layer"),
+          states = layer.append("g")
+            .attr("id", "states")
+            .selectAll("path");
+
+      // map.call(zoom);
+      updateZoom();
+
+      function updateZoom() {
+        var scale = zoom.scale();
+        layer.attr("transform",
+          "translate(" + zoom.translate() + ") " +
+          "scale(" + [scale, scale] + ")");
+      }
+
+      var proj = d3.geo.albersUsa(),
+          topology,
+          geometries,
+          stateData,
+          dataById = {},
+          carto = d3.cartogram()
+            .projection(proj)
+            .properties(function(d) {
+              return dataById[d.id];
+            })
+            .value(function(d) {
+              return +d.properties[field];
+            });
+
+      window.onhashchange = function() {
+        parseHash();
+      };
+
+      d3.json("data/us-states-segmentized.topojson", function(topo) {
+        topology = topo;
+        geometries = topology.objects.states.geometries;
+        d3.csv("data/nst_2011.csv", function(data) {
+          stateData = data;
+          dataById = d3.nest()
+            .key(function(d) { return d.NAME; })
+            .rollup(function(d) { return d[0]; })
+            .map(data);
+          init();
+
+          var files = [
+            {
+              name: "Firearms Licensees (2011)",
+              url: "data/2012/11-federal-firearms-licensees-by-state_2011.csv",
+              prefix: "licensees_",
+              fields: [
+                {name: "FFL Population", id: "ffl_pop"}
+              ]
+            },
+            {
+              name: "NFA Registered Weapons (2012)",
+              url: "data/2012/08-nfa-registered-weapons-by-state_2012-03.csv",
+              prefix: "registered_",
+              fields: [
+                {name: "Any Other Weapon", id: "any_other"},
+                {name: "Destructive Device", id: "dest_weapon"},
+                {name: "Machinegun", id: "machinegun"},
+                {name: "Silencer", id: "silencer"},
+                {name: "Short Barreled Rifle", id: "short_rifle"},
+                {name: "Short Barreled Shotgun", id: "short_shotgun"}
+              ]
+            }
+            /*,
+            {
+              url: "data/2012/09-nfa-special-occupational-taxpayers-by-state_2011.csv",
+              prefix: "taxpayers.",
+              fields: [],
+            }
+            */
+          ];
+          function loadNext() {
+            var file = files.shift();
+            if (file) {
+              loadDataSource(file, loadNext);
+            } else {
+              body.classed("loading", false);
+              parseHash();
+            }
+          }
+
+          loadNext();
+        });
+      });
+
+      function loadDataSource(source, callback) {
+        d3.csv(source.url, function(rows) {
+          var unpack = d3.sheet.unpack();
+
+          source.fields.forEach(function(field) {
+            if (typeof field.parse === "function") {
+              unpack.column(field.name, field.parse);
+            }
+            if (!field.key) field.key = field.name;
+            fields.push(field);
+            fieldsById[field.id] = field;
+
+            field.key = source.prefix + field.id;
+          });
+
+          var optgroup = fieldSelect.append("optgroup")
+            .attr("label", source.name);
+
+          optgroup.selectAll("option")
+            .data(source.fields)
+            .enter()
+            .append("option")
+              .attr("value", function(d) { return d.id; })
+              .text(function(d) { return d.name; });
+
+          rows.map(unpack).forEach(function(row) {
+            if (row.State) {
+              var state = dataById[row.State.string];
+              if (state) {
+                source.fields.forEach(function(field) {
+                  state[field.key] = row[field.name].value;
+                });
+              }
+            }
+          });
+
+          callback();
+        });
+      }
+
+      function init() {
+        var features = carto.features(topology, geometries),
+            path = d3.geo.path()
+              .projection(proj);
+
+        states = states.data(features)
+          .enter()
+          .append("path")
+            .attr("class", "state")
+            .attr("id", function(d) {
+              return d.properties.NAME;
+            })
+            .attr("fill", "#fafafa")
+            .attr("d", path);
+
+        states.append("title");
+
+        // parseHash();
+      }
+
+      function reset() {
+        stat.text("");
+        body.classed("updating", false);
+
+        var features = carto.features(topology, geometries),
+            path = d3.geo.path()
+              .projection(proj);
+
+        states.data(features)
+          .transition()
+            .duration(750)
+            .ease("linear")
+            .attr("fill", "#fafafa")
+            .attr("d", path);
+
+        states.select("title")
+          .text(function(d) {
+            return d.properties.NAME;
+          });
+      }
+
+      function update() {
+        var start = Date.now();
+        body.classed("updating", true);
+
+        var key = field.key,
+            fmt = perCapita
+              ? d3.format(".8f") // XXX
+              : (typeof field.format === "function")
+                ? field.format
+                : d3.format(field.format || ","),
+            value = function(d) {
+              var v = +d.properties[key] || 0;
+              return perCapita
+                ? v / +d.properties[perCapitaKey]
+                : v;
+            },
+            values = states.data()
+              .map(value)
+              .filter(function(n) {
+                return !isNaN(n);
+              })
+              .sort(d3.ascending),
+            lo = values[0],
+            hi = values[values.length - 1];
+
+        var color = d3.scale.linear()
+          .range(colors)
+          .domain(lo < 0
+            ? [lo, 0, hi]
+            : [lo, d3.mean(values), hi]);
+
+        // normalize the scale to positive numbers
+        var scale = d3.scale.linear()
+          .domain([lo, hi])
+          .range([1, 1000]);
+
+        // tell the cartogram to use the scaled values
+        carto.value(function(d) {
+          var v = value(d);
+          console.log(d.properties.NAME, v);
+          return scale(v);
+        });
+
+        // generate the new features, pre-projected
+        var features = carto(topology, geometries).features;
+
+        // update the data
+        states.data(features)
+          .select("title")
+            .text(function(d) {
+              return [d.properties.NAME, fmt(value(d))].join(": ");
+            });
+
+        states.transition()
+          .duration(750)
+          .ease("linear")
+          .attr("fill", function(d) {
+            return color(value(d));
+          })
+          .attr("d", carto.path);
+
+        var delta = (Date.now() - start) / 1000;
+        stat.text(["calculated in", delta.toFixed(1), "seconds"].join(" "));
+        body.classed("updating", false);
+      }
+
+      var deferredUpdate = (function() {
+        var timeout;
+        return function() {
+          var args = arguments;
+          clearTimeout(timeout);
+          stat.text("calculating...");
+          return timeout = setTimeout(function() {
+            update.apply(null, arguments);
+          }, 10);
+        };
+      })();
+
+      var hashish = d3.selectAll("a.hashish")
+        .datum(function() {
+          return this.href;
+        });
+
+      function parseHash() {
+        var parts = location.hash.substr(1).split("/"),
+            desiredFieldId = parts[0];
+
+        field = fieldsById[desiredFieldId] || fields[0];
+        perCapita = parts[1] === "true";
+
+        fieldSelect.property("selectedIndex", fields.indexOf(field));
+
+        if (field.id === "none") {
+
+          reset();
+
+        } else {
+
+          perCapitaCheck.attr("checked", perCapita ? "checked" : null);
+
+          deferredUpdate();
+          location.replace("#" + [field.id, perCapita].join("/"));
+
+          hashish.attr("href", function(href) {
+            return href + location.hash;
+          });
+        }
+      }
+
+    </script>
+  </body>
+</html>
