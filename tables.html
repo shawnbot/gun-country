@@ -336,21 +336,25 @@
         });
 
       function populate(node, rows) {
+        // create the table and <thead>
         var table = d3.select(node),
             thead = table.select("thead"),
+            // get the column headers and map them to column data
             headers = thead.selectAll("tr:last-child > th")
               .datum(function(d, i) {
                 return {
                   index: i,
                   key: this.dataset.key || this.textContent,
                   colored: this.classList.contains("colored"),
-                  group: this.dataset.group,
+                  group: null. // this.dataset.group, // XXX
                   type: this.dataset.type || "number",
                   sortable: this.classList.contains("sortable")
                 };
               }),
               unpack = d3.sheet.unpack();
 
+          // iterate over the headers and append their data to the
+          // columns array
           var columns = [];
           headers.each(function(col) {
             if (col.type) {
@@ -359,34 +363,37 @@
             columns.push(col);
           });
 
+          // unpack the data and group columns
           var unpacked = rows.map(unpack),
               colors = ["#fff", "#f00"],
               groups = {};
           columns.forEach(function(col) {
 
+            // get numeric values for this column
             var values = unpacked.map(function(row) {
                   return (typeof row[col.key] === "object")
                     ? row[col.key].value
                     : NaN;
-                })
-                  .filter(function(n) { return !isNaN(n); })
+                }).filter(function(n) { return !isNaN(n); })
                   .sort(),
                 extent = d3.extent(values);
 
+            // create the column scale
             col.scale = d3.scale.linear()
               .domain(extent)
               .range(colors);
 
-              if (col.group) {
-                if (col.group in groups) {
-                  groups[col.group].push(col);
-                } else {
-                  groups[col.group] = [col];
-                }
+            // add the column to its group, if applicable
+            if (col.group) {
+              if (col.group in groups) {
+                groups[col.group].push(col);
+              } else {
+                groups[col.group] = [col];
               }
+            }
           });
 
-          /*
+          // grouped columns get a common scale
           for (var key in groups) {
             var group = groups[key],
                 domain = group[0].scale.domain(),
@@ -403,17 +410,19 @@
               col.scale = scale;
             });
           }
-          */
 
+          // create a <tbody> if it doesn't exist
           tbody = table.selectAll("tbody")
             .data([unpacked]);
           tbody.enter().append("tbody");
 
+          // create all the rows
           var rows = tbody.selectAll("tr")
             .data(function(d) { return d; })
             .enter()
             .append("tr");
 
+          // create all the cells
           var cells = rows.selectAll("td")
             .data(function(row) {
               return row.cells = columns.map(function(col, i) {
@@ -431,6 +440,7 @@
                 return d.value;
               });
 
+          // color all the cells with colored columns
           cells.filter(function(d) {
             return d.column.colored;
           })
@@ -438,6 +448,7 @@
             return d.column.scale(d.value);
           });
 
+          // create sort links for each column header
           var sortedCol = null,
               sortLinks = headers.each(function(d) {
                 d.text = this.textContent;
