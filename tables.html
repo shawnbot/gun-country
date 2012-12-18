@@ -6,10 +6,16 @@
     <style type="text/css">
 
       body {
-        font-family: "Helvetica Neue", Helvetica, sans-serif;
+        font-family: "Hoefler Text", "Georgia", "Times New Roman", serif;
         font-size: 14px;
         line-height: 1.2em;
         padding: 20px;
+      }
+
+      h1, h2, h3, h4 {
+        font-weight: normal;
+        line-height: 1.25em;
+        text-align: center;
       }
 
       #container {
@@ -50,11 +56,35 @@
         vertical-align: top;
       }
 
+      h4 {
+        margin: 5px 0;
+      }
+
+      svg text {
+        font-size: inherit;
+        line-height: inherit;
+      }
+
+      .chart svg {
+        display: block;
+        margin: 5px 0;
+      }
+
+        .chart svg .title {
+        }
+
+      path.area {
+        fill: #ccc;
+      }
+
     </style>
   </head>
   <body>
 
     <div id="container">
+
+      <div id="charts">
+      </div>
 
       <table id="exhibit01" class="data"
         data-url="data/2012/01-firearms-manufactured_1986-2012.csv">
@@ -353,133 +383,207 @@
               }),
               unpack = d3.sheet.unpack();
 
-          // iterate over the headers and append their data to the
-          // columns array
-          var columns = [];
-          headers.each(function(col) {
-            if (col.type) {
-              unpack.column(col.key, parsers[col.type]);
-            }
-            columns.push(col);
-          });
-
-          // unpack the data and group columns
-          var unpacked = rows.map(unpack),
-              colors = ["#fff", "#f00"],
-              groups = {};
-          columns.forEach(function(col) {
-
-            // get numeric values for this column
-            var values = unpacked.map(function(row) {
-                  return (typeof row[col.key] === "object")
-                    ? row[col.key].value
-                    : NaN;
-                }).filter(function(n) { return !isNaN(n); })
-                  .sort(),
-                extent = d3.extent(values);
-
-            // create the column scale
-            col.scale = d3.scale.linear()
-              .domain(extent)
-              .range(colors);
-
-            // add the column to its group, if applicable
-            if (col.group) {
-              if (col.group in groups) {
-                groups[col.group].push(col);
-              } else {
-                groups[col.group] = [col];
-              }
-            }
-          });
-
-          // grouped columns get a common scale
-          for (var key in groups) {
-            var group = groups[key],
-                domain = group[0].scale.domain(),
-                len = group.length;
-            for (var i = 1; i < len; i++) {
-              var d = group[i].scale.domain();
-              if (d[0] < domain[0]) domain[0] = d[0];
-              if (d[1] > domain[1]) domain[1] = d[1];
-            }
-            var scale = d3.scale.linear()
-              .domain(domain)
-              .range(["#fff", "#f0f"]);
-            group.forEach(function(col) {
-              col.scale = scale;
-            });
+        // iterate over the headers and append their data to the
+        // columns array
+        var columns = [];
+        headers.each(function(col) {
+          if (col.type) {
+            unpack.column(col.key, parsers[col.type]);
           }
+          columns.push(col);
+        });
 
-          // create a <tbody> if it doesn't exist
-          tbody = table.selectAll("tbody")
-            .data([unpacked]);
-          tbody.enter().append("tbody");
+        // unpack the data and group columns
+        var unpacked = rows.map(unpack),
+            colors = ["#fff", "#f00"],
+            groups = {};
+        columns.forEach(function(col) {
 
-          // create all the rows
-          var rows = tbody.selectAll("tr")
-            .data(function(d) { return d; })
-            .enter()
-            .append("tr");
+          // get numeric values for this column
+          var values = unpacked.map(function(row) {
+                return (typeof row[col.key] === "object")
+                  ? row[col.key].value
+                  : NaN;
+              }).filter(function(n) { return !isNaN(n); })
+                .sort(),
+              extent = d3.extent(values);
 
-          // create all the cells
-          var cells = rows.selectAll("td")
-            .data(function(row) {
-              return row.cells = columns.map(function(col, i) {
-                var cell = row[col.key] || {value: "-"};
-                cell.column = columns[i];
-                return cell;
-              });
-            })
-            .enter()
-            .append("td")
-              .text(function(d) {
-                return d.string;
-              })
-              .attr("data-value", function(d) {
-                return d.value;
-              });
+          // create the column scale
+          col.scale = d3.scale.linear()
+            .domain(extent)
+            .range(colors);
 
-          // color all the cells with colored columns
-          cells.filter(function(d) {
-            return d.column.colored;
-          })
-          .style("background-color", function(d) {
-            return d.column.scale(d.value);
+          // add the column to its group, if applicable
+          if (col.group) {
+            if (col.group in groups) {
+              groups[col.group].push(col);
+            } else {
+              groups[col.group] = [col];
+            }
+          }
+        });
+
+        // grouped columns get a common scale
+        for (var key in groups) {
+          var group = groups[key],
+              domain = group[0].scale.domain(),
+              len = group.length;
+          for (var i = 1; i < len; i++) {
+            var d = group[i].scale.domain();
+            if (d[0] < domain[0]) domain[0] = d[0];
+            if (d[1] > domain[1]) domain[1] = d[1];
+          }
+          var scale = d3.scale.linear()
+            .domain(domain)
+            .range(["#fff", "#f0f"]);
+          group.forEach(function(col) {
+            col.scale = scale;
           });
+        }
 
-          // create sort links for each column header
-          var sortedCol = null,
-              sortLinks = headers.each(function(d) {
-                d.text = this.textContent;
+        // create a <tbody> if it doesn't exist
+        tbody = table.selectAll("tbody")
+          .data([unpacked]);
+        tbody.enter().append("tbody");
+
+        // create all the rows
+        var rows = tbody.selectAll("tr")
+          .data(function(d) { return d; })
+          .enter()
+          .append("tr");
+
+        // create all the cells
+        var cells = rows.selectAll("td")
+          .data(function(row) {
+            return row.cells = columns.map(function(col, i) {
+              var cell = row[col.key] || {value: "-"};
+              cell.column = columns[i];
+              return cell;
+            });
+          })
+          .enter()
+          .append("td")
+            .text(function(d) {
+              return d.string;
+            })
+            .attr("data-value", function(d) {
+              return d.value;
+            });
+
+        // color all the cells with colored columns
+        cells.filter(function(d) {
+          return d.column.colored;
+        })
+        .style("background-color", function(d) {
+          return d.column.scale(d.value);
+        });
+
+        // create sort links for each column header
+        var sortedCol = null,
+            sortLinks = headers.each(function(d) {
+              d.text = this.textContent;
+            })
+            .text("")
+            .append("a")
+              .text(function(d) {
+                return d.text;
               })
-              .text("")
-              .append("a")
-                .text(function(d) {
-                  return d.text;
-                })
-                .attr("class", "unsorted")
-                .on("click", function(col) {
-                  var getter = function(row) {
-                        return row[col.key].value;
-                      },
-                      order = col.order === d3.descending
-                        ? d3.ascending
-                        : d3.descending;
+              .attr("class", "unsorted")
+              .on("click", function(col) {
+                var getter = function(row) {
+                      return row[col.key].value;
+                    },
+                    order = col.order === d3.descending
+                      ? d3.ascending
+                      : d3.descending;
 
-                  rows.sort(function(a, b) {
-                    return order(getter(a), getter(b));
-                  });
-
-                  col.order = order;
-
-                  sortLinks
-                    .attr("class", function(d) {
-                      return d === col
-                        ? ["sorted", "sorted-" + (col.order === d3.ascending ? "asc" : "desc")].join(" ")
-                        : "unsorted";
-                    });
+                rows.sort(function(a, b) {
+                  return order(getter(a), getter(b));
                 });
+
+                col.order = order;
+
+                sortLinks
+                  .attr("class", function(d) {
+                    return d === col
+                      ? ["sorted", "sorted-" + (col.order === d3.ascending ? "asc" : "desc")].join(" ")
+                      : "unsorted";
+                  });
+              });
+
+        var chartGroup = d3.select("#charts")
+              .append("div");
+            h = 40,
+            w = chartGroup.property("offsetWidth");
+
+        chartGroup.append("h2")
+          .html(table.select("caption").html());
+
+        columns.forEach(function(col) {
+          if (col.key.indexOf("Year") > -1) {
+
+            chartGroup.append("h3")
+              .text(col.key + " ")
+              .append("i")
+                .text("vs.");
+
+            var xKey = col.key,
+                years = unpacked.map(function(row) {
+                  return row[xKey].value;
+                }),
+                xx = d3.scale.linear()
+                  .domain(d3.extent(years))
+                  .range([0, w]),
+                yy = d3.scale.linear()
+                  .range([h, 0]);
+
+            var charts = chartGroup.selectAll(".chart")
+              .data(columns.filter(function(d) {
+                return d !== col;
+              }))
+              .enter()
+              .append("div")
+                .attr("class", "chart")
+                .attr("id", function(col) {
+                  return [xKey, "_v_", col.key].join("");
+                });
+
+            var svg = charts.append("svg")
+              .attr("class", "chart")
+              .attr("width", w)
+              .attr("height", h);
+
+            var paths = svg.append("path")
+              .attr("class", "area")
+              .attr("d", function(column) {
+                yy.domain(column.scale.domain());
+
+                var yKey = column.key,
+                    points = unpacked.map(function(row) {
+                      return [
+                        row[xKey] ? row[xKey].value : NaN,
+                        row[yKey] ? row[yKey].value : NaN
+                      ];
+                    });
+
+                console.log("column:", column, [xKey, yKey], "points:", points, "from:", unpacked);
+
+                var area = d3.svg.area()
+                  .interpolate("monotone")
+                  .x(function(d) { return xx(d[0]); })
+                  .y1(function(d) { return yy(d[1]); })
+                  .y0(h);
+
+                return area(points);
+              });
+
+            var titles = svg.append("text")
+              .attr("class", "title")
+              .attr("transform", "translate(" + [2, 10] + ")")
+              .text(function(col) { return col.key; });
+
+          }
+        });
       }
 
       function dataset() {
