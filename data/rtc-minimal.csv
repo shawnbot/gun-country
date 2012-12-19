@@ -3,9 +3,9 @@ Alabama,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Alaska,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,U,U,U,U,U,U,U,U,U
 Arizona,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,U,U
 Arkansas,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
-California ,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+California,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
 Colorado,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S
-Conneticut,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Connecticut,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Delaware,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
 District of Columbia,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Florida,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
@@ -20,7 +20,7 @@ Kentucky,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Louisiana,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Maine,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Maryland,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
-Massechusetts,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+Massachusetts,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
 Michigan,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S
 Minnesota,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S
 Mississippi,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
@@ -48,5 +48,5 @@ Vermont,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U
 Virginia,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 Washington,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
 West Virginia,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
-Wisconson,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S
+Wisconsin,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S
 Wyoming,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,U
