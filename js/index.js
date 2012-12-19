@@ -7,6 +7,8 @@
     stateFeaturesByName: {}
   };
 
+  var proj = d3.geo.albersUsa();
+
   queue()
     .defer(d3.csv, "data/atf-states.csv")
     .defer(d3.json, "data/us-states.topojson")
@@ -26,17 +28,20 @@
       model.stateFeaturesByName = featuresByName;
 
       var unpack = d3.sheet.unpack();
+      states.sort(function(a, b) {
+        return d3.ascending(a.state, b.state);
+      });
+
       model.states = states.map(function(row) {
-        var feature = featuresByName[row.state];
-        var state = unpack(row);
+        var feature = featuresByName[row.state],
+            state = repack(unpack(row));
         state.feature = feature;
-        if (feature) feature.properties = repack(state);
-        else console.warn("no state by name:", row.state, state);
+        feature.properties = state;
         return state;
       });
 
       model.statesByName = d3.nest()
-        .key(function(d) { return d.state.value; })
+        .key(function(d) { return d.state; })
         .rollup(function(d) { return d[0]; })
         .map(model.states);
 
@@ -61,7 +66,7 @@
           .data(model.stateFeatures)
           .enter()
           .append("a")
-            .attr("href", function(d) {
+            .attr("xlink:href", function(d) {
               return "#state-" + d.id;
             }),
         statePaths = stateLinks.append("path")
@@ -70,6 +75,7 @@
             return "state-shape" + d.id;
           });
 
+    // preserve aspect ratio
     function resize() {
       map.attr("height", ~~(map.property("offsetWidth") / aspect));
     }
@@ -80,21 +86,56 @@
     statesGroup.attr("transform", null);
 
     var geo = d3.geo.path()
-      .projection(d3.geo.albersUsa());
+      .projection(proj);
     statePaths.attr("d", geo);
   }
 
   function initStates() {
-  }
+    var list = d3.select("#states"),
+        states = list.selectAll(".state")
+          .data(model.states)
+          .enter()
+          .append("div")
+            .attr("class", "state")
+            .attr("id", function(d) {
+              return "state-" + d.state;
+            });
 
-  function groupBy(key) {
-    if (typeof key !== "function") {
-      var k = key;
-      key = function(d) { return d[k]; };
-    }
-    return d3.nest()
-      .key(key)
-      .rollup(function(d) { return d[0]; });
+    states.append("h2")
+      .attr("class", "title")
+      .text(function(d) {
+        return d.state;
+      });
+
+    var path = d3.geo.path()
+          .projection(proj),
+        size = 230,
+        maps = states.append("div")
+          .attr("class", "map")
+          .append("svg")
+            .attr("viewBox", [0, 0, size, size])
+            .attr("preserveAspectRatio", "meet xMidYMid"),
+        shapes = maps.append("path")
+          .datum(function(d) {
+            return d.feature;
+          })
+          .attr("class", "state")
+          .attr("d", path)
+          .attr("transform", function(d) {
+            var offset = path.centroid(d);
+            offset[0] = ~~(size / 2 - offset[0]);
+            offset[1] = ~~(size / 2 - offset[1]);
+            return "translate(" + offset + ")";
+          });
+
+      function resize() {
+        // width of the first one determines the rest
+        var w = maps.property("offsetWidth");
+        maps.attr("height", w);
+      }
+
+      d3.select(window).on("resize", resize);
+      resize();
   }
 
   function repack(unpackedObject) {
