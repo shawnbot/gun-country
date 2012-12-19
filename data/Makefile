@@ -1,4 +1,4 @@
-all: atf-states.csv
+all: atf-states.csv rtc-minimal.csv
 
 nst-minimal.csv: nst_2011.csv
 	csvcut -c STATE,NAME,POPESTIMATE2011 $< \
