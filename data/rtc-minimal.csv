@@ -1,0 +1,52 @@
+State,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011
+Alabama,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Alaska,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,U,U,U,U,U,U,U,U,U
+Arizona,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,U,U
+Arkansas,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+California ,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+Colorado,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S
+Conneticut,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Delaware,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+District of Columbia,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Florida,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Georgia,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Hawaii,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+Idaho,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Illinois,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Indiana,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Iowa,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S
+Kansas,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S
+Kentucky,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Louisiana,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Maine,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Maryland,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+Massechusetts,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+Michigan,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S
+Minnesota,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S
+Mississippi,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Missouri,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S
+Montana,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Nebraska,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S
+Nevada,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+New Hampshire,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+New Jersey,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+New Mexico,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S
+New York,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+North Carolina,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+North Dakota,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Ohio,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S
+Oklahoma,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Oregon,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Pennsylvania,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Rhode Island,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M,M
+South Carolina,M,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+South Dakota,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Tennessee,N,N,N,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Texas,N,N,N,N,N,N,N,N,N,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Utah,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Vermont,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U,U
+Virginia,M,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Washington,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+West Virginia,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S
+Wisconson,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,S
+Wyoming,M,M,M,M,M,M,M,M,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,S,U
