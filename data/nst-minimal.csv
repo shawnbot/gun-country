@@ -1,58 +1,58 @@
-state,population
-United States,311591917
-Northeast Region,55521598
-Midwest Region,67158835
-South Region,116046736
-West Region,72864748
-Alabama,4802740
-Alaska,722718
-Arizona,6482505
-Arkansas,2937979
-California,37691912
-Colorado,5116796
-Connecticut,3580709
-Delaware,907135
-District of Columbia,617996
-Florida,19057542
-Georgia,9815210
-Hawaii,1374810
-Idaho,1584985
-Illinois,12869257
-Indiana,6516922
-Iowa,3062309
-Kansas,2871238
-Kentucky,4369356
-Louisiana,4574836
-Maine,1328188
-Maryland,5828289
-Massachusetts,6587536
-Michigan,9876187
-Minnesota,5344861
-Mississippi,2978512
-Missouri,6010688
-Montana,998199
-Nebraska,1842641
-Nevada,2723322
-New Hampshire,1318194
-New Jersey,8821155
-New Mexico,2082224
-New York,19465197
-North Carolina,9656401
-North Dakota,683932
-Ohio,11544951
-Oklahoma,3791508
-Oregon,3871859
-Pennsylvania,12742886
-Rhode Island,1051302
-South Carolina,4679230
-South Dakota,824082
-Tennessee,6403353
-Texas,25674681
-Utah,2817222
-Vermont,626431
-Virginia,8096604
-Washington,6830038
-West Virginia,1855364
-Wisconsin,5711767
-Wyoming,568158
-Puerto Rico Commonwealth,3706690
+id,state,population
+0,United States,311591917
+0,Northeast Region,55521598
+0,Midwest Region,67158835
+0,South Region,116046736
+0,West Region,72864748
+1,Alabama,4802740
+2,Alaska,722718
+4,Arizona,6482505
+5,Arkansas,2937979
+6,California,37691912
+8,Colorado,5116796
+9,Connecticut,3580709
+10,Delaware,907135
+11,District of Columbia,617996
+12,Florida,19057542
+13,Georgia,9815210
+15,Hawaii,1374810
+16,Idaho,1584985
+17,Illinois,12869257
+18,Indiana,6516922
+19,Iowa,3062309
+20,Kansas,2871238
+21,Kentucky,4369356
+22,Louisiana,4574836
+23,Maine,1328188
+24,Maryland,5828289
+25,Massachusetts,6587536
+26,Michigan,9876187
+27,Minnesota,5344861
+28,Mississippi,2978512
+29,Missouri,6010688
+30,Montana,998199
+31,Nebraska,1842641
+32,Nevada,2723322
+33,New Hampshire,1318194
+34,New Jersey,8821155
+35,New Mexico,2082224
+36,New York,19465197
+37,North Carolina,9656401
+38,North Dakota,683932
+39,Ohio,11544951
+40,Oklahoma,3791508
+41,Oregon,3871859
+42,Pennsylvania,12742886
+44,Rhode Island,1051302
+45,South Carolina,4679230
+46,South Dakota,824082
+47,Tennessee,6403353
+48,Texas,25674681
+49,Utah,2817222
+50,Vermont,626431
+51,Virginia,8096604
+53,Washington,6830038
+54,West Virginia,1855364
+55,Wisconsin,5711767
+56,Wyoming,568158
+72,Puerto Rico Commonwealth,3706690
