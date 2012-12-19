@@ -114,6 +114,9 @@
     var path = d3.geo.path()
           .projection(proj),
         size = 230,
+        padding = 5,
+        innerSize = size - padding * 2,
+        center = [size / 2, size / 2],
         maps = states.append("div")
           .attr("class", "map")
           .append("svg")
@@ -126,10 +129,17 @@
           .attr("class", "state")
           .attr("d", path)
           .attr("transform", function(d) {
-            var offset = path.centroid(d);
-            offset[0] = ~~(size / 2 - offset[0]);
-            offset[1] = ~~(size / 2 - offset[1]);
-            return "translate(" + offset + ")";
+            var bbox = this.getBBox(),
+                scale = 1 / Math.max(bbox.width / innerSize, bbox.height / innerSize),
+                transform = [];
+            // move it to 0,0
+            transform.push("translate("
+              + [-(bbox.x + bbox.width / 2), -(bbox.y + bbox.height / 2)] + ")");
+            // scale it
+            transform.push("scale(" + [scale, scale] + ")");
+            // move it back to the center
+            transform.push("translate(" + center + ")");
+            return transform.reverse().join(" ");
           });
 
       function resize() {
