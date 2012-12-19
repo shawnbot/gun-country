@@ -25,6 +25,7 @@ atf-states.csv: \
 		| csvjoin -c state,State - atf-registered.csv \
 		| csvcut -C State \
 		| csvjoin -c state,State - atf-taxpayers.csv \
+		| csvcut -C State \
 		> $@
 
 rtc-minimal.csv: right-to-carry.csv
