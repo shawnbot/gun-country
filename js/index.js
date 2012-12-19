@@ -52,6 +52,10 @@
 
     });
 
+  function makeId(str) {
+    return str.replace(/\W/g, "_").toLowerCase();
+  }
+
   function initMap() {
     var width = 880,
         height = 500,
@@ -67,12 +71,12 @@
           .enter()
           .append("a")
             .attr("xlink:href", function(d) {
-              return "#state-" + d.id;
+              return "#state-" + makeId(d.id);
             }),
         statePaths = stateLinks.append("path")
           .attr("class", "state")
           .attr("id", function(d) {
-            return "state-shape" + d.id;
+            return "state-shape-" + makeId(d.id);
           });
 
     // preserve aspect ratio
@@ -98,7 +102,7 @@
           .append("div")
             .attr("class", "state")
             .attr("id", function(d) {
-              return "state-" + d.state;
+              return "state-" + makeId(d.state);
             });
 
     states.append("h2")
