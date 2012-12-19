@@ -2,7 +2,7 @@ all: atf-states.csv
 
 nst-minimal.csv: nst_2011.csv
 	csvcut -c STATE,NAME,POPESTIMATE2011 $< \
-		| sed "1 s/STATE/id/" \
+		| sed "1 s/STATE/fips/" \
 		| sed "1 s/NAME/state/" \
 		| sed "1 s/POPESTIMATE2011/population/" > $@
 

@@ -1,4 +1,4 @@
-id,state,population,Any Other Weapon,Destructive Device,Machinegun,Silencer,Short Barreled Rifle,Short Barreled Shotgun,Total Registrations,Importers,Manufacturers,Dealers,Total Taxpayers,State,FFL Population
+fips,state,population,Any Other Weapon,Destructive Device,Machinegun,Silencer,Short Barreled Rifle,Short Barreled Shotgun,Total Registrations,Importers,Manufacturers,Dealers,Total Taxpayers,State,FFL Population
 1,Alabama,4802740,"1,133","47,421","15,653","8,550","1,327","2,075","76,159",12,28,43,83,Alabama,"2,103"
 2,Alaska,722718,311,"3,317","1,617","2,085",508,"1,101","8,939",0,10,25,35,Alaska,997
 4,Arizona,6482505,"1,080","67,185","16,879","15,860","5,492","1,851","108,347",14,140,121,275,Arizona,"2,723"
