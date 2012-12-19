@@ -24,8 +24,18 @@ atf-states.csv: \
 		| csvcut -C State \
 		| csvjoin -c state,State - atf-registered.csv \
 		| csvcut -C State \
-		| csvjoin -c state,State - atf-taxpayers.csv > $@
+		| csvjoin -c state,State - atf-taxpayers.csv \
+		> $@
+
+rtc-minimal.csv: right-to-carry.csv
+	cat $< \
+		| perl -pi -e 's/No(-| )Issue/N/g' \
+		| perl -pi -e 's/May(-| )Issue/M/g' \
+		| perl -pi -e 's/Shall(-| )Issue/S/g' \
+		| perl -pi -e 's/Unrestricted/U/g' \
+		> $@
 
 clean:
 	rm -f nst-minimal.csv
+	rm -f rtc-minimal.csv
 	rm -f atf-*.csv
