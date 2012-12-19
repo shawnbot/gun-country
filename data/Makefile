@@ -24,7 +24,8 @@ atf-states.csv: \
 		| csvcut -C State \
 		| csvjoin -c state,State - atf-registered.csv \
 		| csvcut -C State \
-		| csvjoin -c state,State - atf-taxpayers.csv > $@
+		| csvjoin -c state,State - atf-taxpayers.csv \
+		| csvcut -C State > $@
 
 clean:
 	rm -f nst-minimal.csv
