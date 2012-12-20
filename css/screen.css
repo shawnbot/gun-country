@@ -2,6 +2,23 @@ h1, h2 {
   text-align: center;
 }
 
+.table td,
+.table th {
+  border-top: 1px solid #fff;
+}
+
+table caption {
+  font-weight: bold;
+}
+
+table thead th {
+  font-weight: normal !important;
+}
+
+table th:first-child {
+  text-align: right;
+}
+
 #us-map {
   position: relative;
 }
@@ -58,6 +75,10 @@ svg,
   padding: 10px 0;
 }
 
+  #states .state.active {
+    background: #f9f9f9;
+  }
+
 #states .state .map svg {
   display: block;
   width: 100%;
@@ -89,6 +110,44 @@ pattern path {
   vertical-align: middle;
   text-align: center;
   margin-right: 4px;
+}
+
+#concealed-carry tbody td { opacity: .8; }
+#concealed-carry tbody tr:hover td { opacity: 1; }
+
+/* don't show state abbreviations by default
+ * (we'll show these in the collapsed layout) */
+#concealed-carry abbr {
+  display: none;
+  font-weight: bold;
+}
+
+#concealed-carry tbody th {
+  font-weight: normal;
+}
+
+/* collapse the concealed carry table */
+@media (max-width: 900px) {
+
+  /* state titles: shrink */
+  #concealed-carry tbody th {
+    max-width: 2em;
+  }
+
+  /* show state abbreviations */
+  #concealed-carry tbody th abbr {
+    display: inline;
+  }
+
+  /* hide full state names */
+  #concealed-carry tbody th .name {
+    display: none;
+  }
+
+  /* hide the thead */
+  #concealed-carry thead {
+    display: none;
+  }
 }
 
 /* Mobile */

@@ -14,6 +14,59 @@
       "M": "may carry",
       "S": "shall issue",
       "U": "unrestricted"
+    },
+    abbreviations: {
+      "Alabama": "AL",
+      "Alaska": "AK",
+      "Arizona": "AZ",
+      "Arkansas": "AK",
+      "California": "CA",
+      "Colorado": "CO",
+      "Connecticut": "CT",
+      "Delaware": "DE",
+      "District of Columbia": "DC",
+      "Florida": "FL",
+      "Georgia": "GA",
+      "Hawaii": "HI",
+      "Idaho": "ID",
+      "Illinois": "IL",
+      "Indiana": "IN",
+      "Iowa": "IO",
+      "Kansas": "KS",
+      "Kentucky": "KN",
+      "Louisiana": "LA",
+      "Maine": "ME",
+      "Maryland": "MD",
+      "Massachusetts": "MA",
+      "Michigan": "MI",
+      "Minnesota": "MN",
+      "Mississippi": "MS",
+      "Missouri": "MO",
+      "Montana": "MT",
+      "Nebraska": "NE",
+      "Nevada": "NV",
+      "New Hampshire": "NH",
+      "New Jersey": "NJ",
+      "New Mexico": "NM",
+      "New York": "NY",
+      "North Carolina": "NC",
+      "North Dakota": "ND",
+      "Ohio": "OH",
+      "Oklahoma": "OK",
+      "Oregon": "OR",
+      "Pennsylvania": "PA",
+      "Rhode Island": "RI",
+      "South Carolina": "SC",
+      "South Dakota": "SD",
+      "Tennessee": "TN",
+      "Texas": "TX",
+      "Utah": "UT",
+      "Vermont": "VT",
+      "Virginia": "VA",
+      "Washington": "WA",
+      "West Virginia": "WV",
+      "Wisconsin": "WI",
+      "Wyoming": "WY"
     }
   };
 
@@ -57,6 +110,7 @@
     model.states = states.map(function(row) {
       var feature = featuresByName[row.state],
           state = repack(unpack(row));
+      state.abbr = model.abbreviations[row.state];
       state.feature = feature;
       feature.properties = state;
       return state;
@@ -90,6 +144,7 @@
     console.log("model:", model);
 
     initMap();
+    initConcealedCarry();
     initStates();
   }
 
@@ -111,7 +166,7 @@
           .enter()
           .append("a")
             .attr("xlink:href", function(d) {
-              return "#state-" + makeId(d.id);
+              return "#" + makeId(d.id);
             }),
         statePaths = stateLinks.append("path")
           .attr("class", function(d) {
@@ -256,6 +311,76 @@
     resize();
   }
 
+  function initConcealedCarry() {
+    var root = d3.select("#concealed-carry"),
+        table = root.select("table"),
+        header = table.select("thead tr"),
+        tbody = table.select("tbody"),
+        years = model.rtcYears.slice();
+
+    table.select("caption .years")
+      .text("(" + d3.extent(years).join(" - ") + ")");
+
+    header.append("th")
+      .attr("class", "state")
+      .text("State");
+
+    header.selectAll("th.year")
+      .data(years)
+      .enter()
+      .append("th")
+        .attr("class", "year")
+        .html(function(y) {
+          return "&lsquo;" + String(y).substr(2);
+        });
+
+    var rows = tbody.selectAll("tr")
+      .data(model.states)
+      .enter()
+      .append("tr")
+        .attr("class", "state")
+        .attr("id", function(d) {
+          return ["concealed", makeId(d.state)].join("-");
+        });
+
+    var titles = rows.append("th")
+      .attr("class", "state")
+      .append("a")
+        .attr("href", function(d) {
+          return "#" + makeId(d.state);
+        });
+
+    titles.append("abbr")
+      .text(function(d) {
+        return d.abbr;
+      });
+    titles.append("span")
+      .attr("class", "name")
+      .text(function(d) {
+        return d.state;
+      });
+
+    rows.selectAll("td")
+      .data(function(d) {
+        return years.map(function(year) {
+          return {
+            state: d,
+            year: year,
+            status: d.rtc[year]
+          };
+        });
+      })
+      .enter()
+      .append("td")
+        .attr("title", function(d) {
+          var text = model.rtcStrings[d.status];
+          return [d.state.state, "in", d.year + ":", text].join(" ");
+        })
+        .attr("class", function(d) {
+          return "rtc-" + d.status;
+        });
+  }
+
   function initStates() {
     var list = d3.select("#states"),
         states = list.selectAll(".state")
@@ -264,7 +389,7 @@
           .append("div")
             .attr("class", "state row")
             .attr("id", function(d) {
-              return "state-" + makeId(d.state);
+              return makeId(d.state);
             });
 
     var left = states.append("div")
