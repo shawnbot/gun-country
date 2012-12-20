@@ -30,7 +30,15 @@
   function init(error, states, rtc, topology) {
     var geometries = topology.objects.states.geometries,
         features = geometries.map(function(geom) {
-          return topojson.object(topology, geom);
+          return {
+            type: "Feature",
+            id: geom.id,
+            properties: null,
+            geometry: {
+              type: geom.type,
+              coordinates: topojson.object(topology, geom).coordinates
+            }
+          };
         }),
         featuresByName = d3.nest()
           .key(function(d) { return d.id; })
