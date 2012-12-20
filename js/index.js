@@ -174,7 +174,7 @@
         return scale(+d.properties[field] || 0);
       });
 
-      console.log("values:", values);
+      // console.log("values:", values);
 
       var warped = carto(topology, geometries).features;
       statePaths.data(warped, function(d) {
