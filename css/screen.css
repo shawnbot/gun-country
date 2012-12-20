@@ -36,7 +36,7 @@ svg,
   position: absolute;
   top: 0;
   left: 0;
-  padding: 2px 10px 2px 6px;
+  padding: 2px 10px 0 6px;
   background: #f3f3f3;
 }
 
@@ -53,6 +53,10 @@ svg,
 
   #legend li {
     margin-bottom: 2px;
+  }
+
+  #legend li:last-child {
+    margin-bottom: 4px;
   }
 
 #us-map svg {
@@ -111,15 +115,24 @@ pattern path {
   stroke-width: .4;
 }
 
+#legend h6 {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: bold;
+  margin: 0;
+}
+
 #legend li {
   background: none !important;
 }
 
 #legend b {
   display: inline-block;
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: middle;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: baseline;
+  position: relative;
+  top: 2px;
   text-align: center;
   margin-right: 4px;
 }

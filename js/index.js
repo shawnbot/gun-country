@@ -199,8 +199,8 @@
      * ground/castle doctrine and right-to-carry statuses.
      */
     var hatches = [
-          {key: "stand-your-ground", size: [286, 284]},
-          {key: "castle-doctrine", size: [38, 26]}
+          {key: "stand-your-ground", size: [3, 4]},
+          {key: "castle-doctrine", size: [37, 25]}
         ],
         patterns = [];
     d3.keys(model.rtcStrings).forEach(function(rtc) {
@@ -438,6 +438,10 @@
             transform.push("translate(" + center + ")");
             return transform.reverse().join(" ");
           });
+
+    shapes.attr("d", function(d) {
+      return "M0,0L300,0L300,300L0,300L0,0" + d3.select(this).attr("d");
+    });
 
     function resize() {
       // width of the first one determines the rest
