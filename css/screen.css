@@ -112,6 +112,11 @@ pattern path {
   margin-right: 4px;
 }
 
+#concealed-carry th,
+#concealed-carry td {
+   line-height: 16px !important;
+}
+
 #concealed-carry tbody td { opacity: .8; }
 #concealed-carry tbody tr:hover td { opacity: 1; }
 
@@ -127,7 +132,7 @@ pattern path {
 }
 
 /* collapse the concealed carry table */
-@media (max-width: 900px) {
+@media (max-width: 979px) {
 
   /* state titles: shrink */
   #concealed-carry tbody th {
