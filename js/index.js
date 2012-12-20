@@ -195,8 +195,8 @@
           });
 
     var hatches = [
-          {key: "stand-your-ground", size: [286, 284]},
-          {key: "castle-doctrine", size: [38, 26]}
+          {key: "stand-your-ground", size: [3, 4]},
+          {key: "castle-doctrine", size: [37, 25]}
         ],
         patterns = [];
     d3.keys(model.rtcStrings).forEach(function(rtc) {
