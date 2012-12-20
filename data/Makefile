@@ -15,17 +15,19 @@ atf-registered.csv: 2012/09-nfa-special-occupational-taxpayers-by-state_2011.csv
 atf-taxpayers.csv: 2012/11-federal-firearms-licensees-by-state_2011.csv
 	cat $< | sed '1 s/([^,"]+)/tax $$1/g' > $@
 
+syg-minimal.csv: stand-your-ground.csv
+	cat $< | csvcut -C 5 > $@
+
 atf-states.csv: \
 	nst-minimal.csv \
 	atf-licensees.csv \
 	atf-registered.csv \
-	atf-taxpayers.csv
-	csvjoin -c state,State nst-minimal.csv atf-licensees.csv \
-		| csvcut -C State \
-		| csvjoin -c state,State - atf-registered.csv \
-		| csvcut -C State \
-		| csvjoin -c state,State - atf-taxpayers.csv \
-		| csvcut -C State \
+	atf-taxpayers.csv \
+	syg-minimal.csv
+	csvjoin -c state,State nst-minimal.csv atf-licensees.csv | csvcut -C State \
+		| csvjoin -c state,State - atf-registered.csv | csvcut -C State \
+		| csvjoin -c state,State - atf-taxpayers.csv | csvcut -C State \
+		| csvjoin -c state,State - syg-minimal.csv | csvcut -C State \
 		> $@
 
 rtc-minimal.csv: right-to-carry.csv
@@ -39,4 +41,5 @@ rtc-minimal.csv: right-to-carry.csv
 clean:
 	rm -f nst-minimal.csv
 	rm -f rtc-minimal.csv
+	rm -f syg-minimal.csv
 	rm -f atf-*.csv
