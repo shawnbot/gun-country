@@ -109,21 +109,12 @@
           })
           .attr("id", function(d) {
             return "state-shape-" + makeId(d.id);
-          });
-
-    var topology = model.statesTopology,
-        geometries = model.stateTopoGeometries;
-        carto = d3.cartogram()
-          .projection(proj)
-          .properties(function(d) {
-            return model.statesByName[d.id];
-          });
-
-    var scaleBy = d3.select("#scale-by"),
-        scaleByLinks = scaleBy.selectAll("a.scale")
+          }),
+        scaleBy = d3.selectAll("#scale-by > *")
           .datum(function() {
             return this.getAttribute("data-scale");
-          })
+          }),
+        scaleByLinks = scaleBy.select("a")
           .on("click", function(field) {
             if (field) {
               rescale(field);
@@ -133,7 +124,21 @@
             scaleBy.classed("active", function(d) {
               return d === field;
             });
+
+            d3.event.preventDefault();
+            return false;
           });
+
+    var topology = model.statesTopology,
+        geometries = model.stateTopoGeometries;
+        carto = d3.cartogram()
+          .projection(proj)
+          .properties(function(d) {
+            return model.statesByName[d.id];
+          }),
+        path = d3.geo.path()
+          .projection(proj),
+        duration = 500;
 
     // preserve aspect ratio
     function resize() {
@@ -143,13 +148,11 @@
     function reset(animate) {
       statePaths.data(model.stateFeatures);
 
-      var path = d3.geo.path()
-            .projection(proj),
-          target = animate
-            ? statePaths.transition()
-                .duration(1000)
-                .ease("linear")
-            : statePaths;
+      var target = animate
+        ? statePaths.transition()
+            .duration(duration)
+            .ease("linear")
+        : statePaths;
 
       target.attr("d", path);
     }
@@ -179,7 +182,7 @@
           return d.id;
         })
         .transition()
-          .duration(1000)
+          .duration(duration)
           .ease("linear")
           .attr("d", carto.path);
     }
