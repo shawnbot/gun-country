@@ -92,10 +92,13 @@ svg,
 /* "may issue" */
 /* "shall issue" */
 /* "unrestricted" */
-.rtc-N { fill: #ccd6d6; background-color: #ccd6d6 !important; }
-.rtc-M { fill: #a1bcbf; background-color: #a1bcbf !important; }
-.rtc-S { fill: #5d7575; background-color: #5d7575 !important; }
-.rtc-U { fill: #1b3144; background-color: #1b3144 !important; }
+.rtc-N { background-color: #ccd6d6; } svg .rtc-N { fill: #ccd6d6; }
+.rtc-M { background-color: #a1bcbf; } svg .rtc-M { fill: #a1bcbf; }
+.rtc-S { background-color: #5d7575; } svg .rtc-S { fill: #5d7575; }
+.rtc-U { background-color: #1b3144; } svg .rtc-U { fill: #1b3144; }
+
+.syg-S { background-image: url(images/stand-your-ground.png); }
+.syg-C { background-image: url(images/castle-doctrine.png); }
 
 pattern path {
   fill: none;
