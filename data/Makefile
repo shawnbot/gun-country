@@ -1,10 +1,10 @@
 all: atf-states.csv rtc-minimal.csv
 
 nst-minimal.csv: nst_2011.csv
-	csvcut -c STATE,NAME,POPESTIMATE2011 $< \
+	csvcut -c STATE,NAME,POPESTIMATE2010 $< \
 		| sed "1 s/STATE/fips/" \
 		| sed "1 s/NAME/state/" \
-		| sed "1 s/POPESTIMATE2011/population/" > $@
+		| sed "1 s/POPESTIMATE2010/population/" > $@
 
 atf-licensees.csv:
 	cp 2012/08-nfa-registered-weapons-by-state_2012-03.csv $@
