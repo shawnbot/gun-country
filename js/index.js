@@ -195,8 +195,8 @@
           });
 
     var hatches = [
-          {key: "stand-your-ground", size: 5},
-          {key: "castle-doctrine", size: 10}
+          {key: "stand-your-ground", size: [286, 284]},
+          {key: "castle-doctrine", size: [38, 26]}
         ],
         patterns = [];
     d3.keys(model.rtcStrings).forEach(function(rtc) {
@@ -219,26 +219,21 @@
           .attr("patternUnits", "userSpaceOnUse")
           .attr("x", 0)
           .attr("y", 0)
-          .attr("width", function(d) { return d.size; })
-          .attr("height", function(d) { return d.size; })
+          .attr("width", function(d) { return d.size[0]; })
+          .attr("height", function(d) { return d.size[1]; })
           .append("g");
     patterns.append("rect")
       .attr("class", function(d) { return "rtc-" + d.rtc; })
       .attr("x", 0)
       .attr("y", 0)
-      .attr("width", function(d) { return d.size; })
-      .attr("height", function(d) { return d.size; });
-    patterns.selectAll("path")
-      .data(function(d) {
-        return d3.range(2).map(d3.functor(d));
-      })
-      .enter()
-        .append("path")
-        .attr("d", function(d, i) {
-          return (i == 0)
-            ? ["M0,0,l", d.size, ",", d.size].join("")
-            : ["M", d.size, ",0,l", -d.size, ",", d.size].join("");
-        });
+      .attr("width", function(d) { return d.size[0]; })
+      .attr("height", function(d) { return d.size[1]; });
+    patterns.append("image")
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", function(d) { return d.size[0]; })
+      .attr("height", function(d) { return d.size[1]; })
+      .attr("xlink:href", function(d) { return "css/images/" + d.hatch + ".png"; });
 
     statePaths.style("fill", function(d) {
       return getStateFill(d.properties);

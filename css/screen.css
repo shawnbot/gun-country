@@ -92,10 +92,10 @@ svg,
 /* "may issue" */
 /* "shall issue" */
 /* "unrestricted" */
-.rtc-N { fill: #A6D854; background-color: #A6D854 !important; }
-.rtc-M { fill: #8DA0CB; background-color: #8DA0CB !important; }
-.rtc-S { fill: #E78AC3; background-color: #E78AC3 !important; }
-.rtc-U { fill: #FC8D62; background-color: #FC8D62 !important; }
+.rtc-N { fill: #ccd6d6; background-color: #ccd6d6 !important; }
+.rtc-M { fill: #a1bcbf; background-color: #a1bcbf !important; }
+.rtc-S { fill: #5d7575; background-color: #5d7575 !important; }
+.rtc-U { fill: #1b3144; background-color: #1b3144 !important; }
 
 pattern path {
   fill: none;
