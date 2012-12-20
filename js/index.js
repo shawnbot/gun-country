@@ -194,6 +194,10 @@
             return false;
           });
 
+    /*
+     * set up <pattern> definitions for each combination of stand your
+     * ground/castle doctrine and right-to-carry statuses.
+     */
     var hatches = [
           {key: "stand-your-ground", size: [286, 284]},
           {key: "castle-doctrine", size: [38, 26]}
