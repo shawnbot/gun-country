@@ -44,7 +44,6 @@ svg,
 }
 
   #us-map path.state {
-    fill: #ccc;
     fill-opacity: .8;
     stroke: #fff;
     stroke-width: 1;
@@ -65,19 +64,23 @@ svg,
 }
 
 #states .state .map path.state {
-  fill: #ccc;
   stroke: none;
 }
 
-.rtc-N { fill: #A6D854 !important; } /* "no issue" */
-.rtc-M { fill: #8DA0CB !important; } /* "may issue" */
-.rtc-S { fill: #E78AC3 !important; } /* "shall issue" */
-.rtc-U { fill: #FC8D62 !important; } /* "unrestricted" */
+/* "no issue" */
+/* "may issue" */
+/* "shall issue" */
+/* "unrestricted" */
+.rtc-N { fill: #A6D854; background-color: #A6D854 !important; }
+.rtc-M { fill: #8DA0CB; background-color: #8DA0CB !important; }
+.rtc-S { fill: #E78AC3; background-color: #E78AC3 !important; }
+.rtc-U { fill: #FC8D62; background-color: #FC8D62 !important; }
 
-.rtc-N { background-color: #A6D854 !important; } /* "no issue" */
-.rtc-M { background-color: #8DA0CB !important; } /* "may issue" */
-.rtc-S { background-color: #E78AC3 !important; } /* "shall issue" */
-.rtc-U { background-color: #FC8D62 !important; } /* "unrestricted" */
+pattern path {
+  fill: none;
+  stroke: #000;
+  stroke-width: .4;
+}
 
 #rtc-types .box {
   display: inline-block;

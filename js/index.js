@@ -8,6 +8,7 @@
     stateFeatures: [],
     stateFeaturesByName: {},
     rtcYears: [],
+    lastRtcYear: 2011,
     rtcStrings: {
       "N": "no issue",
       "M": "may carry",
@@ -62,6 +63,8 @@
       .map(Number)
       .sort(d3.ascending);
 
+    model.lastRtcYear = model.rtcYears[model.rtcYears.length - 1];
+
     var rtcByState = d3.nest()
       .key(function(d) { return d.State; })
       .rollup(function(d) { return d[0]; })
@@ -90,7 +93,6 @@
     var width = 880,
         height = 500,
         aspect = width / height,
-        lastRtcYear = model.rtcYears[model.rtcYears.length - 1],
         map = d3.select("#us-map svg")
           .attr("viewBox", [0, 0, width, height].join(" "))
           .attr("preserveAspectRatio", "meet xMidYMid"),
@@ -105,7 +107,7 @@
             }),
         statePaths = stateLinks.append("path")
           .attr("class", function(d) {
-            return ["state", "rtc-" + d.properties.rtc[lastRtcYear]].join(" ");
+            return ["state", "rtc-" + d.properties.rtc[model.lastRtcYear]].join(" ");
           })
           .attr("id", function(d) {
             return "state-shape-" + makeId(d.id);
@@ -128,6 +130,56 @@
             d3.event.preventDefault();
             return false;
           });
+
+    var hatches = [
+          {key: "stand-your-ground", size: 5},
+          {key: "castle-doctrine", size: 10}
+        ],
+        patterns = [];
+    d3.keys(model.rtcStrings).forEach(function(rtc) {
+      hatches.forEach(function(hatch) {
+        patterns.push({
+          id: [hatch.key, rtc].join("-"),
+          hatch: hatch.key,
+          rtc: rtc,
+          size: hatch.size
+        });
+      });
+    });
+
+    var patterns = map.select("defs")
+      .selectAll("pattern")
+      .data(patterns)
+      .enter()
+        .append("pattern")
+          .attr("id", function(d) { return d.id; })
+          .attr("patternUnits", "userSpaceOnUse")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", function(d) { return d.size; })
+          .attr("height", function(d) { return d.size; })
+          .append("g");
+    patterns.append("rect")
+      .attr("class", function(d) { return "rtc-" + d.rtc; })
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr("width", function(d) { return d.size; })
+      .attr("height", function(d) { return d.size; });
+    patterns.selectAll("path")
+      .data(function(d) {
+        return d3.range(2).map(d3.functor(d));
+      })
+      .enter()
+        .append("path")
+        .attr("d", function(d, i) {
+          return (i == 0)
+            ? ["M0,0,l", d.size, ",", d.size].join("")
+            : ["M", d.size, ",0,l", -d.size, ",", d.size].join("");
+        });
+
+    statePaths.style("fill", function(d) {
+      return getStateFill(d.properties);
+    });
 
     var topology = model.statesTopology,
         geometries = model.stateTopoGeometries;
@@ -197,8 +249,7 @@
   }
 
   function initStates() {
-    var lastRtcYear = model.rtcYears[model.rtcYears.length - 1],
-        list = d3.select("#states"),
+    var list = d3.select("#states"),
         states = list.selectAll(".state")
           .data(model.states)
           .enter()
@@ -236,9 +287,12 @@
             return d.feature;
           })
           .attr("class", function(d) {
-            return ["state", "rtc-" + d.properties.rtc[lastRtcYear]].join(" ");
+            return ["state", "rtc-" + d.properties.rtc[model.lastRtcYear]].join(" ");
           })
           .attr("d", path)
+          .style("fill", function(d) {
+            return getStateFill(d.properties);
+          })
           .attr("transform", function(d) {
             var bbox = this.getBBox(),
                 scale = 1 / Math.max(bbox.width / innerSize, bbox.height / innerSize),
@@ -264,6 +318,20 @@
     }
 
     resize();
+  }
+
+  function getStateFill(d) {
+    var stand = d["Stand Your Ground"] == 1,
+        castle = d["Any Castle Doctrine Expansion"] == 1;
+    if (stand || castle) {
+      var prefix = stand
+            ? "stand-your-ground"
+            : "castle-doctrine",
+          pattern = [prefix, "-", d.rtc[model.lastRtcYear]].join("");
+      return "url(#" + pattern + ")";
+    } else {
+      return null;
+    }
   }
 
   function repack(unpackedObject) {
