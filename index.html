@@ -10,16 +10,57 @@
     <link rel="stylesheet" href="css/vendor/bootswatch.min.css">
     <link rel="stylesheet" href="css/screen.css">
 
-    <script src="http://d3js.org/queue.v1.min.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://d3js.org/d3.v2.min.js"></script>
     <script src="http://d3js.org/topojson.v0.min.js"></script>
+    <script src="js/cartogram.js"></script>
   </head>
   <body>
     <div id="root" class="container">
-      <h1>Where are the Guns?</h1>
-      <h2>(we don&rsquo;t <i>really</i> know)</h2>
+      <div id="intro">
+        <h1>Where are the Guns?</h1>
+        <h2>(we don&rsquo;t <i>really</i> know)</h2>
+      </div>
+
+      <div class="row">
+        <div class="span4">
+          <p>Estimates range from:</p>
+
+          <ul>
+            <li><a href="#">&lsquo;<b>approaching 300 million</b>&rsquo;</a></li>
+            <li>to <b>40-45% of households have one</b>, to x, to y.</li>
+          </ul>
+        </div>
+
+        <div class="span4">
+          <p>Given that the population of the USA today is somewhere around the
+          311 million mark, that could mean that there&rsquo;s almost 1 gun per
+          person.</p>
+        </div>
+
+        <div class="span4">
+          <p>Scale states using statistics from the
+          <a href="http://atf.gov">Beureau of Alcohol, Tobacco, &amp; Firearms</a>:</p>
+
+          <ul id="scale-by" class="nav nav-pills">
+            <li class="active"><a class="scale">(no scale)</a></li>
+            <!-- <li><a class="scale" data-scale="population">Population</a></li> -->
+            <li><a class="scale" data-scale="Total Registrations">Registrations</a></li>
+            <li><a class="scale" data-scale="FFL Population">FFL Population</a></li>
+          </ul>
+        </div>
+
+      </div>
 
       <div id="us-map">
+        <svg></svg>
+        <div id="legend">
+          <ul id="rtc-types">
+            <li><span class="box rtc-N"></span> no carry</li>
+            <li><span class="box rtc-M"></span> &ldquo;may carry&rdquo;</li>
+            <li><span class="box rtc-S"></span> &ldquo;shall carry&rdquo;</li>
+            <li><span class="box rtc-U"></span> unrestricted</li>
+          </ul>
+        </div>
       </div>
 
       <div id="states">

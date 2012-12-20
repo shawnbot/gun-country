@@ -1,56 +1,86 @@
 (function(exports) {
 
-  var model = {
+  var model = exports.model = {
     states: [],
+    statesTopology: {},
+    stateTopoGeometries: [],
     statesByName: {},
     stateFeatures: [],
-    stateFeaturesByName: {}
+    stateFeaturesByName: {},
+    rtcYears: [],
+    rtcStrings: {
+      "N": "no issue",
+      "M": "may carry",
+      "S": "shall issue",
+      "U": "unrestricted"
+    }
   };
 
   var proj = d3.geo.albersUsa();
 
-  queue()
-    .defer(d3.csv, "data/atf-states.csv")
-    .defer(d3.json, "data/us-states.topojson")
-    .await(function ready(error, states, topology) {
-      model.statesTopology = topology;
-
-      var geometries = topology.objects.states.geometries,
-          features = geometries.map(function(geom) {
-            return topojson.object(topology, geom);
-          }),
-          featuresByName = d3.nest()
-            .key(function(d) { return d.id; })
-            .rollup(function(d) { return d[0]; })
-            .map(features);
-
-      model.stateFeatures = features;
-      model.stateFeaturesByName = featuresByName;
-
-      var unpack = d3.sheet.unpack();
-      states.sort(function(a, b) {
-        return d3.ascending(a.state, b.state);
+  d3.csv("data/atf-states.csv", function(states) {
+    d3.csv("data/rtc-minimal.csv", function(rtc) {
+      d3.json("data/us-states-segmentized.topojson", function(topology) {
+        init(null, states, rtc, topology);
       });
+    })
+  });
 
-      model.states = states.map(function(row) {
-        var feature = featuresByName[row.state],
-            state = repack(unpack(row));
-        state.feature = feature;
-        feature.properties = state;
-        return state;
-      });
+  function init(error, states, rtc, topology) {
+    var geometries = topology.objects.states.geometries,
+        features = geometries.map(function(geom) {
+          return topojson.object(topology, geom);
+        }),
+        featuresByName = d3.nest()
+          .key(function(d) { return d.id; })
+          .rollup(function(d) { return d[0]; })
+          .map(features);
 
-      model.statesByName = d3.nest()
-        .key(function(d) { return d.state; })
-        .rollup(function(d) { return d[0]; })
-        .map(model.states);
+    model.statesTopology = topology;
+    model.stateTopoGeometries = geometries;
+    model.stateFeaturesByName = featuresByName;
 
-      console.log("model:", model);
-
-      initMap();
-      initStates();
-
+    var unpack = d3.sheet.unpack();
+    states.sort(function(a, b) {
+      return d3.ascending(a.state, b.state);
     });
+
+    model.states = states.map(function(row) {
+      var feature = featuresByName[row.state],
+          state = repack(unpack(row));
+      state.feature = feature;
+      feature.properties = state;
+      return state;
+    });
+
+    model.stateFeatures = features.filter(function(feature) {
+      return feature.properties;
+    });
+
+    model.rtcYears = d3.keys(rtc[0])
+      .filter(function(key) { return key.match(/^\d{4}$/); })
+      .map(Number)
+      .sort(d3.ascending);
+
+    var rtcByState = d3.nest()
+      .key(function(d) { return d.State; })
+      .rollup(function(d) { return d[0]; })
+      .map(rtc);
+
+    model.states.forEach(function(state) {
+      state.rtc = rtcByState[state.state];
+    });
+
+    model.statesByName = d3.nest()
+      .key(function(d) { return d.state; })
+      .rollup(function(d) { return d[0]; })
+      .map(model.states);
+
+    console.log("model:", model);
+
+    initMap();
+    initStates();
+  }
 
   function makeId(str) {
     return str.replace(/\W/g, "_").toLowerCase();
@@ -60,10 +90,10 @@
     var width = 880,
         height = 500,
         aspect = width / height,
-        map = d3.select("#us-map")
-          .append("svg")
-            .attr("viewBox", [0, 0, width, height].join(" "))
-            .attr("preserveAspectRatio", "meet xMidYMid"),
+        lastRtcYear = model.rtcYears[model.rtcYears.length - 1],
+        map = d3.select("#us-map svg")
+          .attr("viewBox", [0, 0, width, height].join(" "))
+          .attr("preserveAspectRatio", "meet xMidYMid"),
         statesGroup = map.append("g")
           .attr("class", "shapes"),
         stateLinks = statesGroup.selectAll("a")
@@ -74,9 +104,35 @@
               return "#state-" + makeId(d.id);
             }),
         statePaths = stateLinks.append("path")
-          .attr("class", "state")
+          .attr("class", function(d) {
+            return ["state", "rtc-" + d.properties.rtc[lastRtcYear]].join(" ");
+          })
           .attr("id", function(d) {
             return "state-shape-" + makeId(d.id);
+          });
+
+    var topology = model.statesTopology,
+        geometries = model.stateTopoGeometries;
+        carto = d3.cartogram()
+          .projection(proj)
+          .properties(function(d) {
+            return model.statesByName[d.id];
+          });
+
+    var scaleBy = d3.select("#scale-by"),
+        scaleByLinks = scaleBy.selectAll("a.scale")
+          .datum(function() {
+            return this.getAttribute("data-scale");
+          })
+          .on("click", function(field) {
+            if (field) {
+              rescale(field);
+            } else {
+              reset(true);
+            }
+            scaleBy.classed("active", function(d) {
+              return d === field;
+            });
           });
 
     // preserve aspect ratio
@@ -84,28 +140,78 @@
       map.attr("height", ~~(map.property("offsetWidth") / aspect));
     }
 
-    d3.select(window).on("resize", resize);
+    function reset(animate) {
+      statePaths.data(model.stateFeatures);
+
+      var path = d3.geo.path()
+            .projection(proj),
+          target = animate
+            ? statePaths.transition()
+                .duration(1000)
+                .ease("linear")
+            : statePaths;
+
+      target.attr("d", path);
+    }
+
+    function rescale(field) {
+      var values = model.states.map(function(d) {
+              return +d[field];
+            })
+            .filter(function(n) {
+              return !isNaN(n);
+            })
+            .sort(d3.ascending),
+          scale = d3.scale.linear()
+            .domain(d3.extent(values))
+            .range([10, 1000]);
+
+      carto.projection(proj);
+      carto.value(function(d) {
+        return scale(+d.properties[field] || 0);
+      });
+
+      console.log("values:", values);
+
+      var warped = carto(topology, geometries).features;
+      statePaths.data(warped, function(d) {
+          // console.log(d.id, d.properties[field], scale(+d.properties[field]));
+          return d.id;
+        })
+        .transition()
+          .duration(1000)
+          .ease("linear")
+          .attr("d", carto.path);
+    }
+
+    reset();
+
+    try {
+      window.addEventListener("resize", resize);
+    } catch (err) {
+    }
     resize();
-
-    statesGroup.attr("transform", null);
-
-    var geo = d3.geo.path()
-      .projection(proj);
-    statePaths.attr("d", geo);
   }
 
   function initStates() {
-    var list = d3.select("#states"),
+    var lastRtcYear = model.rtcYears[model.rtcYears.length - 1],
+        list = d3.select("#states"),
         states = list.selectAll(".state")
           .data(model.states)
           .enter()
           .append("div")
-            .attr("class", "state")
+            .attr("class", "state row")
             .attr("id", function(d) {
               return "state-" + makeId(d.state);
             });
 
-    states.append("h2")
+    var left = states.append("div")
+      .attr("class", "left span3");
+
+    var right = states.append("div")
+      .attr("class", "left span9");
+
+    left.append("h2")
       .attr("class", "title")
       .text(function(d) {
         return d.state;
@@ -117,7 +223,7 @@
         padding = 5,
         innerSize = size - padding * 2,
         center = [size / 2, size / 2],
-        maps = states.append("div")
+        maps = left.append("div")
           .attr("class", "map")
           .append("svg")
             .attr("viewBox", [0, 0, size, size])
@@ -126,7 +232,9 @@
           .datum(function(d) {
             return d.feature;
           })
-          .attr("class", "state")
+          .attr("class", function(d) {
+            return ["state", "rtc-" + d.properties.rtc[lastRtcYear]].join(" ");
+          })
           .attr("d", path)
           .attr("transform", function(d) {
             var bbox = this.getBBox(),
@@ -142,14 +250,17 @@
             return transform.reverse().join(" ");
           });
 
-      function resize() {
-        // width of the first one determines the rest
-        var w = maps.property("offsetWidth");
-        maps.attr("height", w);
-      }
+    function resize() {
+      // width of the first one determines the rest
+      maps.attr("height", maps.property("offsetWidth"));
+    }
 
-      d3.select(window).on("resize", resize);
-      resize();
+    try {
+      window.addEventListener("resize", resize);
+    } catch (err) {
+    }
+
+    resize();
   }
 
   function repack(unpackedObject) {

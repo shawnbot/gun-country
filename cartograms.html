@@ -286,7 +286,7 @@
               var state = dataById[row.State.string];
               if (state) {
                 source.fields.forEach(function(field) {
-                  state[field.key] = row[field.name].value;
+                  state[field.key] = row[field.name] ? row[field.name].value : 0;
                 });
               }
             }
@@ -376,7 +376,7 @@
         // tell the cartogram to use the scaled values
         carto.value(function(d) {
           var v = value(d);
-          console.log(d.properties.NAME, v);
+          console.log(d.properties.NAME, v, scale(v));
           return scale(v);
         });
 
