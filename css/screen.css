@@ -2,6 +2,8 @@ h1, h2 {
   text-align: center;
 }
 
+.foo { }
+
 .table td,
 .table th {
   border-top: 1px solid #fff;
