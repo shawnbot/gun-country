@@ -2,8 +2,6 @@ h1, h2 {
   text-align: center;
 }
 
-.foo { }
-
 .table td,
 .table th {
   border-top: 1px solid #fff;
@@ -38,8 +36,9 @@ svg,
   position: absolute;
   top: 0;
   left: 0;
-  padding: 2px 10px 2px 6px;
+  padding: 2px 10px 0 6px;
   background: #f3f3f3;
+  background: rgba(240,240,240,.8);
 }
 
   #legend,
@@ -55,6 +54,10 @@ svg,
 
   #legend li {
     margin-bottom: 2px;
+  }
+
+  #legend li:last-child {
+    margin-bottom: 4px;
   }
 
 #us-map svg {
@@ -81,6 +84,9 @@ svg,
     background: #f9f9f9;
   }
 
+#states .state .map {
+}
+
 #states .state .map svg {
   display: block;
   width: 100%;
@@ -88,16 +94,25 @@ svg,
 
 #states .state .map path.state {
   stroke: none;
+  fill: #fff;
 }
 
 /* "no issue" */
 /* "may issue" */
 /* "shall issue" */
 /* "unrestricted" */
-.rtc-N { fill: #ccd6d6; background-color: #ccd6d6 !important; }
-.rtc-M { fill: #a1bcbf; background-color: #a1bcbf !important; }
-.rtc-S { fill: #5d7575; background-color: #5d7575 !important; }
-.rtc-U { fill: #29465b; background-color: #29465b !important; }
+.rtc-N, .rtc-N b { background-color: #ccd6d6 !important; } svg .rtc-N { fill: #ccd6d6; }
+.rtc-M, .rtc-M b { background-color: #a1bcbf !important; } svg .rtc-M { fill: #a1bcbf; }
+.rtc-S, .rtc-S b { background-color: #5d7575 !important; } svg .rtc-S { fill: #5d7575; }
+.rtc-U, .rtc-U b { background-color: #29465b !important; } svg .rtc-U { fill: #29465b; }
+
+.syg-S, .syg-S b,
+.syg-C, .syg-C b {
+  background-attachment: fixed;
+}
+
+.syg-S, .syg-S b { background-image: url(images/stand-your-ground.png); }
+.syg-C, .syg-C b { background-image: url(images/castle-doctrine.png); }
 
 pattern path {
   fill: none;
@@ -105,11 +120,24 @@ pattern path {
   stroke-width: .4;
 }
 
-#rtc-types .box {
+#legend h6 {
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: bold;
+  margin: 0;
+}
+
+#legend li {
+  background: none !important;
+}
+
+#legend b {
   display: inline-block;
-  width: 1.2em;
-  height: 1.2em;
-  vertical-align: middle;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: baseline;
+  position: relative;
+  top: 2px;
   text-align: center;
   margin-right: 4px;
 }
@@ -127,6 +155,7 @@ pattern path {
 #concealed-carry abbr {
   display: none;
   font-weight: bold;
+  font-family: "Andale Mono", "Courier New", monospace;
 }
 
 #concealed-carry tbody th {
@@ -138,7 +167,7 @@ pattern path {
 
   /* state titles: shrink */
   #concealed-carry tbody th {
-    max-width: 2em;
+    max-width: 1.5em;
   }
 
   /* show state abbreviations */
