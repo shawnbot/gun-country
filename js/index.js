@@ -79,12 +79,14 @@
   d3.csv("data/atf-states.csv", function(states) {
     d3.csv("data/rtc-minimal.csv", function(rtc) {
       d3.json("data/us-states.topojson", function(topology) {
-        init(null, states, rtc, topology);
+        d3.csv("data/trace-matrix.csv", function(traceMatrix) {
+          init(null, states, rtc, topology, traceMatrix);
+        });
       });
     })
   });
 
-  function init(error, states, rtc, topology) {
+  function init(error, states, rtc, topology, traceMatrix) {
     var geometries = topology.objects.states.geometries,
         features = geometries.map(function(geom) {
           return {
@@ -158,6 +160,21 @@
       .key(function(d) { return d.state; })
       .rollup(function(d) { return d[0]; })
       .map(model.states);
+
+    var traceKeys = d3.keys(model.abbreviations)
+      .filter(function(k) { return k !== "State"; });
+    traceMatrix.forEach(function(row) {
+      var state = model.statesByName[row.State],
+          trace = state.trace = [];
+      traceKeys.forEach(function(k) {
+        if (row[k]) {
+          trace.push({state: k, volume: +row[k]});
+        }
+      });
+      trace.sort(function(a, b) {
+        return d3.descending(a.volume, b.volume);
+      });
+    });
 
     console.log("model:", model);
 
@@ -430,7 +447,7 @@
       .attr("class", "numbers table table-condensed")
       .append("tbody");
 
-    var dateFormat = d3.time.format("%B %e, %Y"),
+    var dateFormat = d3.time.format("%b %e, %Y"),
         columnTypes = {
           num: {format: d3.format(","), valueClass: false},
           bool: {format: function(b) { return b ? "Yes" : "No"; }, valueClass: true},
@@ -442,6 +459,7 @@
           {label: "Effective Date", key: "sygDate", klass: "syg-effective", type: "date"},
           {label: "Castle Doctrine Expansion?", key: "Any Castle Doctrine Expansion", klass: "castle-doctrine", type: "bool"},
           {label: "Weapons Registered", key: "Total Registrations", klass: "total-regs", type: "num"},
+          {label: "NICS Background Checks", key: "NICS checks 2010", klass: "nics-checks", type: "num"},
           {label: "Federal Firearms Licensees", key: "FFL Population", klass: "ffl-pop", type: "num"}
         ],
         rows = table.selectAll("tr")
