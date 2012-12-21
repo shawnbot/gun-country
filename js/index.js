@@ -233,6 +233,13 @@
       });
     });
 
+    function size(selection) {
+      selection.attr("x", 0)
+        .attr("y", 0)
+        .attr("width", function(d) { return d.size[0]; })
+        .attr("height", function(d) { return d.size[1]; });
+    }
+
     var patterns = map.select("defs")
       .selectAll("pattern")
       .data(patterns)
@@ -240,22 +247,13 @@
         .append("pattern")
           .attr("id", function(d) { return d.id; })
           .attr("patternUnits", "userSpaceOnUse")
-          .attr("x", 0)
-          .attr("y", 0)
-          .attr("width", function(d) { return d.size[0]; })
-          .attr("height", function(d) { return d.size[1]; })
+          .call(size)
           .append("g");
     patterns.append("rect")
       .attr("class", function(d) { return "rtc-" + d.rtc; })
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", function(d) { return d.size[0]; })
-      .attr("height", function(d) { return d.size[1]; });
+      .call(size);
     patterns.append("image")
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr("width", function(d) { return d.size[0]; })
-      .attr("height", function(d) { return d.size[1]; })
+      .call(size)
       .attr("xlink:href", function(d) { return "css/images/" + d.image + ".png"; });
 
     statePaths.style("fill", function(d) {
@@ -412,16 +410,71 @@
               return makeId(d.state);
             });
 
+    states.append("div")
+      .attr("class", "row title")
+      .append("h2")
+        .text(function(d) {
+          return d.state;
+        });
+
     var left = states.append("div")
       .attr("class", "left span3");
 
-    var right = states.append("div")
-      .attr("class", "left span9");
+    var middle = states.append("div")
+      .attr("class", "middle span4");
 
-    left.append("h2")
-      .attr("class", "title")
+    var right = states.append("div")
+      .attr("class", "right span5");
+
+    var table = middle.append("table")
+      .attr("class", "numbers table table-condensed")
+      .append("tbody");
+
+    var dateFormat = d3.time.format("%B %e, %Y"),
+        columnTypes = {
+          num: {format: d3.format(","), valueClass: false},
+          bool: {format: function(b) { return b ? "Yes" : "No"; }, valueClass: true},
+          date: {format: function(d) { return d ? dateFormat(d) : ""}, valueClass: false}
+        },
+        columns = [
+          {label: "Population", key: "population", klass: "pop", type: "num"},
+          {label: "Stand Your Ground Law?", key: "Stand Your Ground", klass: "stand-your-ground", type: "bool"},
+          {label: "Effective Date", key: "sygDate", klass: "syg-effective", type: "date"},
+          {label: "Castle Doctrine Expansion?", key: "Any Castle Doctrine Expansion", klass: "castle-doctrine", type: "bool"},
+          {label: "Weapons Registered", key: "Total Registrations", klass: "total-regs", type: "num"},
+          {label: "Federal Firearms Licensees", key: "FFL Population", klass: "ffl-pop", type: "num"}
+        ],
+        rows = table.selectAll("tr")
+          .data(function(d) {
+            return columns.map(function(c) {
+              var value = d[c.key];
+              return {
+                state: d,
+                column: c,
+                value: value,
+                string: columnTypes[c.type].format(value)
+              };
+            }).filter(function(c) {
+              return c.string && c.string.length;
+            })
+          })
+          .enter()
+          .append("tr")
+            .attr("class", function(d) {
+              var klass = [d.column.klass, d.column.type];
+              if (columnTypes[d.column.type].valueClass) {
+                klass.push(d.string.toLowerCase());
+              }
+              return klass.join(" ");
+            });
+
+    rows.append("th")
       .text(function(d) {
-        return d.state;
+        return d.column.label;
+      });
+    rows.append("td")
+      .text(function(d) {
+        return d.string;
       });
 
     var path = d3.geo.path()
@@ -477,7 +530,8 @@
 
     function resize() {
       // width of the first one determines the rest
-      maps.attr("height", maps.property("offsetWidth"));
+      var height = Math.min(400, maps.property("offsetWidth"));
+      maps.attr("height", height);
     }
 
     try {

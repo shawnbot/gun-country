@@ -66,7 +66,7 @@ svg,
 }
 
   #us-map path.state {
-    fill-opacity: .8;
+    fill-opacity: .9;
     stroke: #fff;
     stroke-width: 1;
   }
@@ -147,7 +147,7 @@ pattern path {
    line-height: 16px !important;
 }
 
-#concealed-carry tbody td { opacity: .8; }
+#concealed-carry tbody td { opacity: .9; }
 #concealed-carry tbody tr:hover td { opacity: 1; }
 
 /* don't show state abbreviations by default
