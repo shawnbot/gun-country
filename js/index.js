@@ -218,7 +218,7 @@
      */
     var hatches = [
           {key: "S", image: "stand-your-ground", size: [3, 4]},
-          {key: "C", image: "castle-doctrine", size: [37, 25]}
+          {key: "C", image: "castle-doctrine", size: [36, 24]}
         ],
         patterns = [];
     d3.keys(model.rtcStrings).forEach(function(rtc) {
