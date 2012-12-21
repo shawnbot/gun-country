@@ -15,6 +15,10 @@
       "S": "shall issue",
       "U": "unrestricted"
     },
+    sygStrings: {
+      "S": "Stand Your Ground",
+      "C": "Any Castle Doctrine Expansion"
+    },
     abbreviations: {
       "Alabama": "AL",
       "Alaska": "AK",
@@ -74,7 +78,7 @@
 
   d3.csv("data/atf-states.csv", function(states) {
     d3.csv("data/rtc-minimal.csv", function(rtc) {
-      d3.json("data/us-states-segmentized.topojson", function(topology) {
+      d3.json("data/us-states.topojson", function(topology) {
         init(null, states, rtc, topology);
       });
     })
@@ -107,11 +111,25 @@
       return d3.ascending(a.state, b.state);
     });
 
+    var dateFormat = d3.time.format("%m/%d/%Y");
     model.states = states.map(function(row) {
       var feature = featuresByName[row.state],
           state = repack(unpack(row));
       state.abbr = model.abbreviations[row.state];
       state.feature = feature;
+
+      state.syg = (state["Stand Your Ground"] === 1)
+        ? "S"
+        : (state["Any Castle Doctrine Expansion"] === 1)
+          ? "C"
+          : false;
+      state.sygDate = state.syg
+        ? dateFormat.parse(state["Stand Your Ground Law Effective Date"])
+        : null;
+      state.sygYear = state.sygDate
+        ? state.sygDate.getFullYear()
+        : null;
+
       feature.properties = state;
       return state;
     });
@@ -199,8 +217,8 @@
      * ground/castle doctrine and right-to-carry statuses.
      */
     var hatches = [
-          {key: "stand-your-ground", size: [3, 4]},
-          {key: "castle-doctrine", size: [37, 25]}
+          {key: "S", image: "stand-your-ground", size: [3, 4]},
+          {key: "C", image: "castle-doctrine", size: [37, 25]}
         ],
         patterns = [];
     d3.keys(model.rtcStrings).forEach(function(rtc) {
@@ -209,6 +227,7 @@
           id: [hatch.key, rtc].join("-"),
           hatch: hatch.key,
           rtc: rtc,
+          image: hatch.image,
           size: hatch.size
         });
       });
@@ -237,7 +256,7 @@
       .attr("y", 0)
       .attr("width", function(d) { return d.size[0]; })
       .attr("height", function(d) { return d.size[1]; })
-      .attr("xlink:href", function(d) { return "css/images/" + d.hatch + ".png"; });
+      .attr("xlink:href", function(d) { return "css/images/" + d.image + ".png"; });
 
     statePaths.style("fill", function(d) {
       return getStateFill(d.properties);
@@ -359,25 +378,27 @@
         return d.state;
       });
 
-    rows.selectAll("td")
+    var cells = rows.selectAll("td")
       .data(function(d) {
         return years.map(function(year) {
           return {
             state: d,
             year: year,
-            status: d.rtc[year]
+            rtc: d.rtc[year],
+            syg: (d.syg && d.sygYear <= year) ? d.syg : "N"
           };
         });
       })
       .enter()
       .append("td")
         .attr("title", function(d) {
-          var text = model.rtcStrings[d.status];
-          return [d.state.state, "in", d.year + ":", text].join(" ");
+          return [d.state.state, "in", d.year + ":", model.rtcStrings[d.rtc]].join(" ");
         })
         .attr("class", function(d) {
-          return "rtc-" + d.status;
+          return ["rtc-" + d.rtc, "syg-" + d.syg].join(" ");
         });
+
+    console.log("cells:", cells.data());
   }
 
   function initStates() {
@@ -410,7 +431,9 @@
         innerSize = size - padding * 2,
         center = [size / 2, size / 2],
         maps = left.append("div")
-          .attr("class", "map")
+          .attr("class", function(d) {
+            return ["map", "rtc-" + d.rtc[model.lastRtcYear], "syg-" + d.syg].join(" ");
+          })
           .append("svg")
             .attr("viewBox", [0, 0, size, size])
             .attr("preserveAspectRatio", "meet xMidYMid"),
@@ -418,13 +441,8 @@
           .datum(function(d) {
             return d.feature;
           })
-          .attr("class", function(d) {
-            return ["state", "rtc-" + d.properties.rtc[model.lastRtcYear]].join(" ");
-          })
+          .attr("class", "state")
           .attr("d", path)
-          .style("fill", function(d) {
-            return getStateFill(d.properties);
-          })
           .attr("transform", function(d) {
             var bbox = this.getBBox(),
                 scale = 1 / Math.max(bbox.width / innerSize, bbox.height / innerSize),
@@ -439,9 +457,23 @@
             return transform.reverse().join(" ");
           });
 
-    shapes.attr("d", function(d) {
-      return "M0,0L300,0L300,300L0,300L0,0" + d3.select(this).attr("d");
-    });
+    /*
+     * add an outer ring to the shapes and combine with fill-rule: evenodd
+     * to produce a knock-out effect by filling the area *outside* of the
+     * shape.
+     */
+    var r = 1000,
+        outer = [
+          "M", [-r, -r],
+          "L", [+r, -r],
+          "L", [+r, +r],
+          "L", [-r, +r],
+          "L", [-r, -r]
+        ].join("");
+    shapes.attr("fill-rule", "evenodd")
+      .attr("d", function(d) {
+        return outer + d3.select(this).attr("d");
+      });
 
     function resize() {
       // width of the first one determines the rest
@@ -457,13 +489,8 @@
   }
 
   function getStateFill(d) {
-    var stand = d["Stand Your Ground"] == 1,
-        castle = d["Any Castle Doctrine Expansion"] == 1;
-    if (stand || castle) {
-      var prefix = stand
-            ? "stand-your-ground"
-            : "castle-doctrine",
-          pattern = [prefix, "-", d.rtc[model.lastRtcYear]].join("");
+    if (d.syg) {
+      var pattern = [d.syg, "-", d.rtc[model.lastRtcYear]].join("");
       return "url(#" + pattern + ")";
     } else {
       return null;
